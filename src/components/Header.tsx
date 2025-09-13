@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Phone } from 'lucide-react';
+import Logo from './Logo';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,10 +18,10 @@ const Header = () => {
 
   const menuItems = [
     { name: 'Início', href: '#home' },
-    { name: 'Cardápio', href: '#cardapio' },
-    { name: 'Promoções', href: '#promocoes' },
-    { name: 'Sobre', href: '#sobre' },
-    { name: 'Contato', href: '#contato' },
+    { name: 'Oferta do Dia', href: '#oferta-do-dia' },
+    { name: 'Pastéis Tradicionais', href: '#pasteis-tradicionais' },
+    { name: 'Combos Imperdíveis', href: '#combos-imperdiveis' },
+    { name: 'Sabores Exclusivos', href: '#sabores-exclusivos' },
   ];
 
   const handleWhatsApp = () => {
@@ -32,12 +33,10 @@ const Header = () => {
       isScrolled ? 'bg-background/95 backdrop-blur-sm border-b border-border' : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-center h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-gradient-primary">
-              Cantinho do Pastel
-            </h1>
+          <div className="flex items-center space-x-2 absolute left-4">
+            <Logo />
           </div>
 
           {/* Desktop Menu */}
@@ -53,20 +52,9 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              onClick={handleWhatsApp}
-              className="btn-primary primary-gradient text-white hover:scale-105 smooth-transition glow-effect font-semibold shadow-lg"
-            >
-              <Phone className="w-4 h-4 mr-2" />
-              Pedir Agora
-            </Button>
-          </div>
-
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-foreground"
+            className="md:hidden text-foreground absolute right-4"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -87,13 +75,6 @@ const Header = () => {
                   {item.name}
                 </a>
               ))}
-              <Button 
-                onClick={handleWhatsApp}
-                className="btn-primary primary-gradient text-white w-full mt-4 font-semibold"
-              >
-                <Phone className="w-4 h-4 mr-2" />
-                Pedir Agora
-              </Button>
             </nav>
           </div>
         )}

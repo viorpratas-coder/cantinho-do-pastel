@@ -8,7 +8,7 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <img 
@@ -45,21 +45,6 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
-            <Button 
-              onClick={scrollToMenu}
-              size="lg"
-              className="btn-primary primary-gradient text-white text-lg px-10 py-5 hover:scale-110 smooth-transition glow-effect animate-glow shadow-2xl font-semibold"
-            >
-              Ver Cardápio
-            </Button>
-            
-            <Button 
-              variant="outline"
-              size="lg"
-              className="border-2 border-accent text-accent hover:bg-accent hover:text-background text-lg px-10 py-5 smooth-transition hover:scale-105 backdrop-blur-sm bg-background/10 hover:shadow-xl"
-            >
-              Nossas Promoções
-            </Button>
           </div>
 
           {/* Scroll Indicator */}

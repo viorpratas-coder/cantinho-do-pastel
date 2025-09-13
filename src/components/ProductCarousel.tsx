@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, MessageCircle, Star } from 'lucide-react';
@@ -22,13 +22,33 @@ interface ProductCarouselProps {
 
 const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleProducts, setVisibleProducts] = useState(3); // Padrão para desktop
+  
+  // Atualizar o número de produtos visíveis com base no tamanho da tela
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setVisibleProducts(1); // Mobile
+      } else {
+        setVisibleProducts(3); // Desktop
+      }
+    };
+
+    handleResize(); // Verificar no carregamento
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Número total de "slides" possíveis
+  const maxIndex = Math.max(0, products.length - visibleProducts);
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % Math.max(1, products.length - 2));
+    setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + Math.max(1, products.length - 2)) % Math.max(1, products.length - 2));
+    setCurrentIndex((prev) => Math.max(prev - 1, 0));
   };
 
   const handleWhatsApp = (product: Product) => {
@@ -48,6 +68,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
             variant="outline"
             size="sm"
             onClick={prevSlide}
+            disabled={currentIndex === 0}
             className="border-border hover:bg-primary hover:text-white smooth-transition"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -56,6 +77,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
             variant="outline"
             size="sm"
             onClick={nextSlide}
+            disabled={currentIndex >= maxIndex}
             className="border-border hover:bg-primary hover:text-white smooth-transition"
           >
             <ChevronRight className="w-4 h-4" />
@@ -67,7 +89,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
       <div className="relative overflow-hidden">
         <div 
           className="flex smooth-transition"
-          style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
+          style={{ transform: `translateX(-${currentIndex * (100 / visibleProducts)}%)` }}
         >
           {products.map((product) => (
             <div key={product.id} className="flex-none w-full md:w-1/3 px-3 animate-slide-up">
@@ -142,7 +164,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
       {/* Mobile Navigation Dots */}
       <div className="flex justify-center mt-6 md:hidden">
         <div className="flex space-x-2">
-          {Array.from({ length: Math.max(1, products.length - 2) }).map((_, index) => (
+          {Array.from({ length: Math.max(1, products.length - visibleProducts + 1) }).map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
