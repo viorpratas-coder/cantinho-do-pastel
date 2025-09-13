@@ -70,8 +70,8 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
           style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
         >
           {products.map((product) => (
-            <div key={product.id} className="flex-none w-full md:w-1/3 px-3">
-              <Card className="card-gradient border-border hover-shadow netflix-hover group cursor-pointer">
+            <div key={product.id} className="flex-none w-full md:w-1/3 px-3 animate-slide-up">
+              <Card className="card-gradient border-border hover-shadow netflix-hover group cursor-pointer overflow-hidden relative backdrop-blur-sm bg-card/80">
                 {/* Product Image */}
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
@@ -82,8 +82,8 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
                   
                   {/* Promo Badge */}
                   {product.isPromo && (
-                    <div className="absolute top-3 left-3 primary-gradient text-white px-3 py-1 rounded-full text-sm font-semibold">
-                      Promoção!
+                    <div className="absolute top-3 left-3 primary-gradient text-white px-3 py-1 rounded-full text-sm font-semibold animate-bounce-gentle glow-effect">
+                      🔥 Promoção!
                     </div>
                   )}
 
@@ -127,7 +127,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
                   {/* WhatsApp Button */}
                   <Button 
                     onClick={() => handleWhatsApp(product)}
-                    className="w-full primary-gradient text-white hover:scale-105 smooth-transition"
+                    className="btn-primary w-full primary-gradient text-white hover:scale-105 smooth-transition font-semibold py-3 shadow-lg hover:shadow-xl"
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
                     Pedir pelo WhatsApp

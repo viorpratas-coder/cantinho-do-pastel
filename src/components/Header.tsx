@@ -57,7 +57,7 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Button 
               onClick={handleWhatsApp}
-              className="primary-gradient text-white hover:scale-105 smooth-transition glow-effect"
+              className="btn-primary primary-gradient text-white hover:scale-105 smooth-transition glow-effect font-semibold shadow-lg"
             >
               <Phone className="w-4 h-4 mr-2" />
               Pedir Agora
@@ -89,7 +89,7 @@ const Header = () => {
               ))}
               <Button 
                 onClick={handleWhatsApp}
-                className="primary-gradient text-white w-full mt-4"
+                className="btn-primary primary-gradient text-white w-full mt-4 font-semibold"
               >
                 <Phone className="w-4 h-4 mr-2" />
                 Pedir Agora

@@ -23,8 +23,8 @@ const Hero = () => {
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <div className="animate-fade-in">
           {/* Badge */}
-          <div className="inline-flex items-center space-x-2 bg-accent/20 backdrop-blur-sm border border-accent/30 rounded-full px-4 py-2 mb-6">
-            <Star className="w-4 h-4 text-accent" fill="currentColor" />
+          <div className="inline-flex items-center space-x-2 bg-accent/20 backdrop-blur-sm border border-accent/30 rounded-full px-4 py-2 mb-6 animate-pulse-glow">
+            <Star className="w-4 h-4 text-accent animate-bounce-gentle" fill="currentColor" />
             <span className="text-accent font-medium text-sm">
               Os melhores pastéis da cidade
             </span>
@@ -48,7 +48,7 @@ const Hero = () => {
             <Button 
               onClick={scrollToMenu}
               size="lg"
-              className="primary-gradient text-white text-lg px-8 py-4 hover:scale-105 smooth-transition glow-effect animate-glow"
+              className="btn-primary primary-gradient text-white text-lg px-10 py-5 hover:scale-110 smooth-transition glow-effect animate-glow shadow-2xl font-semibold"
             >
               Ver Cardápio
             </Button>
@@ -56,7 +56,7 @@ const Hero = () => {
             <Button 
               variant="outline"
               size="lg"
-              className="border-accent text-accent hover:bg-accent hover:text-background text-lg px-8 py-4 smooth-transition"
+              className="border-2 border-accent text-accent hover:bg-accent hover:text-background text-lg px-10 py-5 smooth-transition hover:scale-105 backdrop-blur-sm bg-background/10 hover:shadow-xl"
             >
               Nossas Promoções
             </Button>

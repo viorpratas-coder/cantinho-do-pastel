@@ -54,8 +54,9 @@ All colors MUST be HSL.
     --shadow-hover: 0 20px 40px hsl(0 0% 0% / 0.7);
 
     /* Transitions */
-    --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    --transition-fast: all 0.2s ease;
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-fast: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-spring: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -182,11 +183,54 @@ All colors MUST be HSL.
 
   /* Netflix hover effects */
   .netflix-hover {
-    @apply smooth-transition hover:scale-105 hover:z-10;
+    @apply smooth-transition hover:scale-[1.08] hover:z-10 hover:-translate-y-2;
   }
 
   .netflix-hover:hover {
     box-shadow: var(--shadow-hover);
+    transform: scale(1.08) translateY(-8px);
+  }
+
+  /* Enhanced button styles */
+  .btn-primary {
+    @apply relative overflow-hidden;
+    transition: var(--transition-spring);
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-primary:hover::before {
+    left: 100%;
+  }
+
+  /* Parallax scroll effects */
+  .parallax-slow {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Loading shimmer effect */
+  .shimmer {
+    background: linear-gradient(90deg, 
+      hsl(var(--muted)) 25%, 
+      hsl(var(--muted-foreground) / 0.1) 50%, 
+      hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 
   /* Text gradients */
