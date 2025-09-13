@@ -1,8 +1,14 @@
 import React from 'react';
+import logoImage from '@/assets/Logo.png';
 
 const Logo = () => {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center">
+      <img 
+        src={logoImage} 
+        alt="Cantinho do Pastel Logo" 
+        className="h-10 w-auto object-contain"
+      />
       <div className="relative w-10 h-8">
         {/* Pastel exterior */}
         <div className="absolute inset-0 bg-gradient-to-r from-amber-700 to-amber-900 rounded-lg transform rotate-3"></div>
