@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Phone } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import Logo from './Logo';
+import CartButton from './CartButton';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -24,23 +25,19 @@ const Header = () => {
     { name: 'Sabores Exclusivos', href: '#sabores-exclusivos' },
   ];
 
-  const handleWhatsApp = () => {
-    window.open('https://wa.me/5511999999999?text=Olá! Gostaria de fazer um pedido no Cantinho do Pastel!', '_blank');
-  };
-
   return (
     <header className={`fixed top-0 w-full z-50 smooth-transition ${
       isScrolled ? 'bg-background/95 backdrop-blur-sm border-b border-border' : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-center h-16">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2 absolute left-4">
-            <Logo />
+          <div className="flex items-center">
+            <Logo showText={true} />
           </div>
-
+          
           {/* Desktop Menu */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {menuItems.map((item) => (
               <a
                 key={item.name}
@@ -50,15 +47,23 @@ const Header = () => {
                 {item.name}
               </a>
             ))}
-          </nav>
+          </div>
+
+          {/* Right Side Buttons */}
+          <div className="hidden md:flex items-center space-x-2">
+            <CartButton />
+          </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-foreground absolute right-4"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex md:hidden items-center space-x-2">
+            <CartButton />
+            <button
+              className="text-foreground"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}

@@ -33,14 +33,12 @@ const Hero = () => {
           {/* Main Title */}
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             O Sabor que
-            <br />
-            <span className="text-gradient-primary">Merece Maratona!</span>
+            <span className="text-gradient-primary block">Merece Maratona!</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-foreground/80 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Descubra os melhores pastéis da cidade e nossas promoções imperdíveis. 
-            Cada mordida é uma experiência única!
+            Descubra os melhores pastéis da cidade e nossas promoções imperdíveis. Cada mordida é uma experiência&nbsp;única!
           </p>
 
           {/* CTA Buttons */}

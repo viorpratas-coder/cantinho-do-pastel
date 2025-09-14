@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 
 const WhatsAppButton = () => {
   const handleWhatsApp = () => {
-    window.open('https://wa.me/5511999999999?text=Olá! Gostaria de fazer um pedido no Cantinho do Pastel!', '_blank');
+    window.open('https://wa.me/5511972239005?text=Olá! Gostaria de fazer um pedido no Cantinho do Pastel!', '_blank');
   };
 
   return (
