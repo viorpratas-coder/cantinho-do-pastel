@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, Plus, Minus, ShoppingCart, MessageCircle, Info } from 'lucide-react';
+import { X, Plus, Minus, ShoppingCart, MessageCircle, Info, CreditCard, QrCode, Wallet } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { usePayment } from '@/contexts/PaymentContext';
 import logoImage from '@/assets/Logo.png';
 
 const Cart = () => {
@@ -20,6 +21,9 @@ const Cart = () => {
     getTotalPrice,
     clearCart
   } = useCart();
+  
+  const { getDefaultPaymentMethod } = usePayment();
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('whatsapp');
 
   // Complementos pré-definidos
   const predefinedFillings = [
@@ -97,6 +101,15 @@ const Cart = () => {
       });
       
       message += `=== TOTAL DO PEDIDO: R$ ${getTotalPrice().toFixed(2)} ===%0A%0A`;
+    
+    // Adicionar informações de pagamento
+    const paymentMethodText = {
+      'whatsapp': 'Pagamento via WhatsApp (dinheiro ou cartão na entrega)',
+      'card': 'Pagamento com cartão (será confirmado na entrega)',
+      'pix': 'Pagamento via PIX (código será enviado após confirmação do pedido)'
+    }[selectedPaymentMethod] || 'Pagamento a combinar';
+    
+    message += `Forma de pagamento preferida: ${paymentMethodText}%0A%0A`;
     } else {
       message += 'Gostaria de saber mais sobre os produtos disponíveis.%0A%0A';
     }
@@ -321,10 +334,43 @@ const Cart = () => {
             {/* Footer */}
             <div className="border-t border-border p-4">
               {cartItems.length > 0 && (
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-semibold">Total:</span>
-                  <span className="text-xl font-bold text-accent">R$ {getTotalPrice().toFixed(2)}</span>
-                </div>
+                <>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-semibold">Total:</span>
+                    <span className="text-xl font-bold text-accent">R$ {getTotalPrice().toFixed(2)}</span>
+                  </div>
+                  
+                  {/* Opções de pagamento */}
+                  <div className="mb-4">
+                    <h4 className="font-semibold mb-2">Forma de Pagamento</h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button 
+                        variant={selectedPaymentMethod === 'whatsapp' ? 'default' : 'outline'}
+                        onClick={() => setSelectedPaymentMethod('whatsapp')}
+                        className="flex flex-col h-auto p-2"
+                      >
+                        <MessageCircle className="w-5 h-5 mb-1" />
+                        <span className="text-xs">WhatsApp</span>
+                      </Button>
+                      <Button 
+                        variant={selectedPaymentMethod === 'card' ? 'default' : 'outline'}
+                        onClick={() => setSelectedPaymentMethod('card')}
+                        className="flex flex-col h-auto p-2"
+                      >
+                        <CreditCard className="w-5 h-5 mb-1" />
+                        <span className="text-xs">Cartão</span>
+                      </Button>
+                      <Button 
+                        variant={selectedPaymentMethod === 'pix' ? 'default' : 'outline'}
+                        onClick={() => setSelectedPaymentMethod('pix')}
+                        className="flex flex-col h-auto p-2"
+                      >
+                        <QrCode className="w-5 h-5 mb-1" />
+                        <span className="text-xs">PIX</span>
+                      </Button>
+                    </div>
+                  </div>
+                </>
               )}
               <Button 
                 onClick={sendOrderToWhatsApp}

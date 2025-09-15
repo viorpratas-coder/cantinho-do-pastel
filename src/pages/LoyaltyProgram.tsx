@@ -10,7 +10,8 @@ import {
   Key,
   Gift,
   Award,
-  CheckCircle
+  CheckCircle,
+  Crown
 } from 'lucide-react';
 import InviteFriends from '@/components/InviteFriends';
 
@@ -108,6 +109,8 @@ const LoyaltyProgram: React.FC = () => {
                 </h3>
                 <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                   <li>Pastel grátis a cada 5 carimbos acumulados</li>
+                  <li>Sistema de pontos e níveis (ganhe 10 pontos por carimbo)</li>
+                  <li>Recompensas especiais ao atingir certos níveis</li>
                   <li>Ofertas especiais e promoções antecipadas</li>
                   <li>Participação em eventos exclusivos</li>
                   <li>Recompensas surpresa para clientes fiéis</li>
@@ -126,6 +129,49 @@ const LoyaltyProgram: React.FC = () => {
                   <li>Volte à sua conta e insira o código para ganhar seu carimbo</li>
                   <li>Após 5 carimbos, você ganha um pastel grátis!</li>
                 </ol>
+              </div>
+              
+              <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
+                <h3 className="font-semibold mb-3 flex items-center">
+                  <Crown className="w-5 h-5 mr-2 text-yellow-600" />
+                  Sistema de Níveis e Recompensas
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                  <div className="text-center p-3 bg-white rounded-lg border border-yellow-200">
+                    <div className="text-lg font-bold text-yellow-600 mb-1">1</div>
+                    <div className="font-medium text-sm mb-1">Iniciante</div>
+                    <div className="text-xs text-muted-foreground">0-99 pts</div>
+                  </div>
+                  <div className="text-center p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <div className="text-lg font-bold text-amber-600 mb-1">2</div>
+                    <div className="font-medium text-sm mb-1">Bronze</div>
+                    <div className="text-xs text-muted-foreground">100-249 pts</div>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="text-lg font-bold text-gray-600 mb-1">3</div>
+                    <div className="font-medium text-sm mb-1">Prata</div>
+                    <div className="text-xs text-muted-foreground">250-499 pts</div>
+                  </div>
+                  <div className="text-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div className="text-lg font-bold text-yellow-600 mb-1">4</div>
+                    <div className="font-medium text-sm mb-1">Ouro</div>
+                    <div className="text-xs text-muted-foreground">500-999 pts</div>
+                  </div>
+                  <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="text-lg font-bold text-blue-600 mb-1">5</div>
+                    <div className="font-medium text-sm mb-1">Diamante</div>
+                    <div className="text-xs text-muted-foreground">1000+ pts</div>
+                  </div>
+                </div>
+                <div className="mt-4 text-sm text-muted-foreground">
+                  <p className="mb-2">Ganhe pontos ao coletar carimbos:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>+10 pontos por carimbo coletado</li>
+                    <li>+50 pontos por cada pastel grátis resgatado</li>
+                    <li>+100 pontos por convidar 3 amigos</li>
+                  </ul>
+                  <p className="mt-3 font-medium">Resgate recompensas especiais com 100 pontos!</p>
+                </div>
               </div>
             </div>
           </CardContent>

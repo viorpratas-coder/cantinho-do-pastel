@@ -16,6 +16,11 @@ interface CustomerFidelityData {
   stamps: FidelityCode[];
   lastRewardDate?: Date;
   profileImage?: string; // Adicionando suporte para foto de perfil
+  level: number; // Nível do cliente no programa de fidelidade
+  points: number; // Pontos acumulados
+  totalSpent: number; // Valor total gasto
+  rewardsClaimed: number; // Recompensas resgatadas
+  lastActivityDate?: Date; // Data da última atividade
 }
 
 interface FidelityCodeContextType {
@@ -33,6 +38,9 @@ interface FidelityCodeContextType {
   canClaimReward: (name: string, phone: string) => boolean;
   getStampCount: (name: string, phone: string) => number;
   resetStamps: (name: string, phone: string) => void;
+  addPoints: (phone: string, points: number) => void; // Adicionar pontos
+  claimReward: (phone: string) => boolean; // Resgatar recompensa
+  getCustomerLevel: (points: number) => number; // Obter nível do cliente
   
   // Profile image functions
   setCustomerProfileImage: (phone: string, imageData: string) => void;
@@ -168,10 +176,102 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       customerPhone: phone,
       stamps: [],
       lastRewardDate: undefined,
-      profileImage: undefined
+      profileImage: undefined,
+      level: 1,
+      points: 0,
+      totalSpent: 0,
+      rewardsClaimed: 0
     };
     
     setCurrentCustomer(customerData);
+  };
+
+  // Função para adicionar pontos ao cliente
+  const addPoints = (phone: string, points: number) => {
+    // Atualizar o cliente atual se for o mesmo
+    if (currentCustomer && currentCustomer.customerPhone === phone) {
+      const newPoints = currentCustomer.points + points;
+      const newLevel = getCustomerLevel(newPoints);
+      
+      setCurrentCustomer({
+        ...currentCustomer,
+        points: newPoints,
+        level: newLevel,
+        lastActivityDate: new Date()
+      });
+    }
+    
+    // Salvar no localStorage
+    try {
+      const savedCustomers = localStorage.getItem('fidelityCustomers');
+      let customers: CustomerFidelityData[] = [];
+      
+      if (savedCustomers) {
+        customers = JSON.parse(savedCustomers);
+      }
+      
+      // Encontrar o cliente existente ou criar um novo
+      const customerIndex = customers.findIndex(c => c.customerPhone === phone);
+      
+      if (customerIndex !== -1) {
+        // Atualizar cliente existente
+        const newPoints = customers[customerIndex].points + points;
+        const newLevel = getCustomerLevel(newPoints);
+        
+        customers[customerIndex] = {
+          ...customers[customerIndex],
+          points: newPoints,
+          level: newLevel,
+          lastActivityDate: new Date()
+        };
+      } else {
+        // Criar novo cliente (isso não deve acontecer normalmente)
+        customers.push({
+          customerName: 'Unknown',
+          customerPhone: phone,
+          stamps: [],
+          profileImage: undefined,
+          level: 1,
+          points: points,
+          totalSpent: 0,
+          rewardsClaimed: 0,
+          lastActivityDate: new Date()
+        });
+      }
+      
+      localStorage.setItem('fidelityCustomers', JSON.stringify(customers));
+    } catch (error) {
+      console.error('Erro ao adicionar pontos ao cliente:', error);
+    }
+  };
+
+  // Função para resgatar recompensa
+  const claimReward = (phone: string): boolean => {
+    // Verificar se o cliente tem pontos suficientes
+    if (currentCustomer && currentCustomer.customerPhone === phone) {
+      if (currentCustomer.points >= 100) { // 100 pontos para resgatar recompensa
+        // Atualizar o cliente
+        setCurrentCustomer({
+          ...currentCustomer,
+          points: currentCustomer.points - 100,
+          rewardsClaimed: currentCustomer.rewardsClaimed + 1,
+          lastRewardDate: new Date()
+        });
+        
+        return true;
+      }
+    }
+    
+    return false;
+  };
+
+  // Função para obter o nível do cliente com base nos pontos
+  const getCustomerLevel = (points: number): number => {
+    if (points >= 1000) return 5; // Diamante
+    if (points >= 500) return 4;   // Ouro
+    if (points >= 250) return 3;   // Prata
+    if (points >= 100) return 2;   // Bronze
+    return 1;                      // Iniciante
   };
 
   const authenticateCustomer = (name: string, phone: string): boolean => {
@@ -187,7 +287,11 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       customerPhone: phone,
       stamps: customerCodes.filter(code => code.used),
       lastRewardDate: undefined,
-      profileImage: undefined
+      profileImage: undefined,
+      level: 1,
+      points: 0,
+      totalSpent: 0,
+      rewardsClaimed: 0
     };
     
     if (savedCustomers) {
@@ -279,7 +383,11 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
           customerName: 'Unknown',
           customerPhone: phone,
           stamps: [],
-          profileImage: imageData
+          profileImage: imageData,
+          level: 1,
+          points: 0,
+          totalSpent: 0,
+          rewardsClaimed: 0
         });
       }
       
@@ -343,6 +451,9 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       getStampCount,
       resetStamps,
       registerCustomer,
+      addPoints,
+      claimReward,
+      getCustomerLevel,
       
       // Profile image functions
       setCustomerProfileImage,
