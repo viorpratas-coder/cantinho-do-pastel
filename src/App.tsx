@@ -24,7 +24,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminPayments from "./pages/AdminPayments";
 import CustomerLayout from "./layouts/CustomerLayout";
-import CustomerDashboard from "./pages/CustomerDashboard";
+import CustomerProfile from "./pages/CustomerProfile";
 import CustomerOrders from "./pages/CustomerOrders";
 import CustomerLoyalty from "./pages/CustomerLoyalty";
 
@@ -61,8 +61,8 @@ const App = () => (
                 
                 {/* Área do Cliente com Layout Unificado */}
                 <Route path="/cliente" element={<CustomerLayout />}> 
-                  <Route index element={<CustomerDashboard />} />
-                  <Route path="perfil" element={<CustomerDashboard />} />
+                  <Route index element={<CustomerProfile />} />
+                  <Route path="perfil" element={<CustomerProfile />} />
                   <Route path="pedidos" element={<CustomerOrders />} />
                   <Route path="fidelidade" element={<CustomerLoyalty />} />
                 </Route>
