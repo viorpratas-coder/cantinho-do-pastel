@@ -218,6 +218,77 @@ All colors MUST be HSL.
     will-change: transform;
   }
 
+  /* Animações para a página de fidelidade */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounceGentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes bounceX {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+  }
+
+  @keyframes confetti {
+    0% { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up.delay-100 {
+    animation-delay: 0.1s;
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up.delay-200 {
+    animation-delay: 0.2s;
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up.delay-300 {
+    animation-delay: 0.3s;
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up.delay-400 {
+    animation-delay: 0.4s;
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up.delay-500 {
+    animation-delay: 0.5s;
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-bounce-gentle {
+    animation: bounceGentle 2s ease-in-out infinite;
+  }
+
+  .animate-bounce-x {
+    animation: bounceX 1s ease-in-out infinite;
+  }
+
+  .animate-confetti {
+    animation: confetti 3s ease-out forwards;
+  }
+
   /* Loading shimmer effect */
   .shimmer {
     background: linear-gradient(90deg, 
@@ -246,5 +317,22 @@ All colors MUST be HSL.
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  
+  /* Cores específicas para os cards de estatísticas */
+  .bg-green-500\/20 {
+    background-color: hsl(120 70% 30% / 0.2);
+  }
+  
+  .text-green-500-foreground {
+    color: hsl(120 70% 85%);
+  }
+  
+  .bg-yellow-500\/20 {
+    background-color: hsl(45 93% 40% / 0.2);
+  }
+  
+  .text-yellow-500-foreground {
+    color: hsl(45 93% 85%);
   }
 }

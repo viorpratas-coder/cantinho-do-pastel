@@ -23,6 +23,36 @@ interface ProductCarouselProps {
   products: Product[];
 }
 
+// Componente para exibir estrelas de avaliação
+const RatingDisplay = ({ rating, hasReviews }: { rating: number; hasReviews: boolean }) => {
+  // Se não houver avaliações, não mostrar nenhuma estrela preenchida
+  if (!hasReviews) {
+    return (
+      <div className="flex items-center">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className="w-3 h-3 text-gray-300"
+          />
+        ))}
+        <span className="text-xs font-medium ml-1">Sem avaliações</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center">
+      {[...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          className={`w-3 h-3 ${i < Math.floor(rating) ? 'text-accent fill-current' : 'text-gray-300'}`}
+        />
+      ))}
+      <span className="text-xs font-medium ml-1">{rating.toFixed(1)}</span>
+    </div>
+  );
+};
+
 const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -53,10 +83,14 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
     const newRatings: Record<number, number> = {};
     const newReviewCounts: Record<number, number> = {};
     products.forEach(product => {
-      const averageRating = getAverageRating(product.id);
-      const reviews = getReviewsByProduct(product.id);
-      newRatings[product.id] = averageRating > 0 ? averageRating : product.rating;
-      newReviewCounts[product.id] = reviews.length;
+      const productReviews = getReviewsByProduct(product.id);
+      if (productReviews.length > 0) {
+        const averageRating = getAverageRating(product.id);
+        newRatings[product.id] = averageRating;
+      } else {
+        newRatings[product.id] = 0; // Sem avaliações
+      }
+      newReviewCounts[product.id] = productReviews.length;
     });
     setRatings(newRatings);
     setReviewCounts(newReviewCounts);
@@ -67,10 +101,14 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
     const newRatings: Record<number, number> = {};
     const newReviewCounts: Record<number, number> = {};
     products.forEach(product => {
-      const averageRating = getAverageRating(product.id);
-      const reviews = getReviewsByProduct(product.id);
-      newRatings[product.id] = averageRating > 0 ? averageRating : product.rating;
-      newReviewCounts[product.id] = reviews.length;
+      const productReviews = getReviewsByProduct(product.id);
+      if (productReviews.length > 0) {
+        const averageRating = getAverageRating(product.id);
+        newRatings[product.id] = averageRating;
+      } else {
+        newRatings[product.id] = 0; // Sem avaliações
+      }
+      newReviewCounts[product.id] = productReviews.length;
     });
     setRatings(newRatings);
     setReviewCounts(newReviewCounts);
@@ -175,8 +213,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
 
                     {/* Rating */}
                     <div className="absolute top-3 right-3 flex items-center space-x-1 bg-background/80 backdrop-blur-sm rounded-full px-2 py-1">
-                      <Star className="w-3 h-3 text-accent" fill="currentColor" />
-                      <span className="text-xs font-medium">{displayRating.toFixed(1)}</span>
+                      <RatingDisplay rating={displayRating} hasReviews={reviewCount > 0} />
                     </div>
                   </div>
 

@@ -13,18 +13,18 @@ interface ProductReviewsProps {
 }
 
 const ProductReviews = ({ productId, productName }: ProductReviewsProps) => {
-  const { getReviewsByProduct, addReview } = useReviews();
+  const { reviews, getReviewsByProduct, addReview } = useReviews();
   const [userRating, setUserRating] = useState(0);
   const [userName, setUserName] = useState('');
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [productReviews, setProductReviews] = useState<any[]>([]);
 
-  // Atualizar avaliações quando o productId mudar
+  // Atualizar avaliações quando o contexto de avaliações mudar
   useEffect(() => {
-    const productReviews = getReviewsByProduct(productId);
-    setReviews(productReviews);
-  }, [productId, getReviewsByProduct]);
+    const updatedReviews = getReviewsByProduct(productId);
+    setProductReviews(updatedReviews);
+  }, [reviews, productId, getReviewsByProduct]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,12 +61,6 @@ const ProductReviews = ({ productId, productName }: ProductReviewsProps) => {
     setUserName('');
     setComment('');
     setIsSubmitting(false);
-    
-    // Atualizar a lista de avaliações após adicionar
-    setTimeout(() => {
-      const updatedReviews = getReviewsByProduct(productId);
-      setReviews(updatedReviews);
-    }, 100);
     
     // Mostrar mensagem de sucesso
     toast({
@@ -130,14 +124,14 @@ const ProductReviews = ({ productId, productName }: ProductReviewsProps) => {
       </Card>
       
       {/* Avaliações Existentes */}
-      {reviews.length > 0 && (
+      {productReviews.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Avaliações dos Clientes ({reviews.length})</CardTitle>
+            <CardTitle>Avaliações dos Clientes ({productReviews.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {reviews.map((review) => (
+              {productReviews.map((review) => (
                 <div key={review.id} className="border-b border-border pb-4 last:border-b-0 last:pb-0">
                   <div className="flex justify-between items-start mb-2">
                     <div>
@@ -159,7 +153,7 @@ const ProductReviews = ({ productId, productName }: ProductReviewsProps) => {
       )}
       
       {/* Mensagem quando não há avaliações */}
-      {reviews.length === 0 && (
+      {productReviews.length === 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Avaliações dos Clientes</CardTitle>

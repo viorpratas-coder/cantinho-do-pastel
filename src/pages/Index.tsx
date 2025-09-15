@@ -4,9 +4,13 @@ import ProductCarousel from '@/components/ProductCarousel';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import Logo from '@/components/Logo';
 import Cart from '@/components/Cart';
+import FidelityBanner from '@/components/FidelityBanner';
 import pastelFrango from '@/assets/pastel-frango.jpg';
 import pastelCarne from '@/assets/pastel-carne.jpg';
 import pastelQueijo from '@/assets/pastel-queijo.jpg';
+import { Star, Gift } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   // Cardápio Netflix-style - Como escolher filmes/séries
@@ -227,6 +231,13 @@ const Index = () => {
       <Header />
       <Hero />
       
+      {/* Banner de Fidelidade */}
+      <section className="py-6 px-4">
+        <div className="container mx-auto">
+          <FidelityBanner />
+        </div>
+      </section>
+      
       {/* Oferta do Dia */}
       <section id="oferta-do-dia" className="py-16 px-4">
         <div className="container mx-auto">
@@ -307,10 +318,11 @@ const Index = () => {
               <h3 className="text-lg font-semibold mb-4">Links Rápidos</h3>
               <ul className="space-y-2">
                 <li><a href="#home" className="text-foreground/70 hover:text-primary smooth-transition">Início</a></li>
-                <li><a href="#oferta-do-dia" className="text-foreground/70 hover:text-primary smooth-transition">Oferta do Dia</a></li>
-                <li><a href="#pasteis-tradicionais" className="text-foreground/70 hover:text-primary smooth-transition">Pastéis Tradicionais</a></li>
-                <li><a href="#combos-imperdiveis" className="text-foreground/70 hover:text-primary smooth-transition">Combos Imperdíveis</a></li>
-                <li><a href="#sabores-exclusivos" className="text-foreground/70 hover:text-primary smooth-transition">Sabores Exclusivos</a></li>
+                <li><a href="#oferta-do-dia" className="text-foreground/70 hover:text-primary smooth-transition">Do Dia</a></li>
+                <li><a href="#pasteis-tradicionais" className="text-foreground/70 hover:text-primary smooth-transition">Tradicionais</a></li>
+                <li><a href="#combos-imperdiveis" className="text-foreground/70 hover:text-primary smooth-transition">Combos</a></li>
+                <li><a href="#sabores-exclusivos" className="text-foreground/70 hover:text-primary smooth-transition">Exclusivos</a></li>
+                <li><a href="#fidelidade" className="text-foreground/70 hover:text-primary smooth-transition">Programa de Fidelidade</a></li>
               </ul>
             </div>
             

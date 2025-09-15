@@ -60,6 +60,27 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## New Features - Enhanced Loyalty System
+
+We've implemented an enhanced loyalty system with improved security:
+
+- Unique code generation for each customer
+- WhatsApp authentication to prevent fraud
+- Customer personal area for loyalty management
+- Full traceability of all loyalty codes
+- Admin panel for code generation and tracking
+
+### Customer Access
+- New loyalty customer area: `/fidelidade/cliente`
+- Customers can log in with name and WhatsApp number
+- Insert unique codes received from the bakery to earn stamps
+
+### Admin Features
+- Admin panel: `/admin/fidelidade`
+- Generate unique loyalty codes for customers
+- Track used and unused codes
+- View loyalty statistics
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/dcd048d6-1b56-4107-adba-7fe7e5b5e1a6) and click on Share -> Publish.
