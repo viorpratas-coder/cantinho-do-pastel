@@ -191,7 +191,7 @@ const LoyaltyProgram: React.FC = () => {
                 </div>
               </div>
               
-              <Link to="/fidelidade/cliente">
+              <Link to="/cliente">
                 <Button className="whitespace-nowrap">
                   <Key className="w-4 h-4 mr-2" />
                   Acessar Minha Conta

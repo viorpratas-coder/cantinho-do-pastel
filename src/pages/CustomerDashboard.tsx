@@ -252,7 +252,7 @@ const CustomerDashboard = () => {
             <p className="text-muted-foreground mb-4">
               Faça login para acessar seu perfil e personalizar sua experiência.
             </p>
-            <Button onClick={() => navigate('/fidelidade/cliente')}>
+            <Button onClick={() => navigate('/cliente')}>
               Entrar na minha conta
             </Button>
           </CardContent>

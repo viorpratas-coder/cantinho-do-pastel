@@ -82,7 +82,7 @@ const Header = () => {
               )}
             </Link>
             <Link
-              to="/fidelidade/cliente"
+              to="/cliente"
               className="flex items-center text-foreground/80 hover:text-primary smooth-transition hover:scale-105"
             >
               <User className="w-4 h-4 mr-1" />
@@ -97,7 +97,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center space-x-2">
-            <Link to="/fidelidade/cliente">
+            <Link to="/cliente">
               <Button variant="ghost" size="sm" className="relative p-2">
                 <User className="w-5 h-5" />
               </Button>
@@ -154,7 +154,7 @@ const Header = () => {
                 )}
               </Link>
               <Link
-                to="/fidelidade/cliente"
+                to="/cliente"
                 className="flex items-center text-foreground/80 hover:text-primary smooth-transition py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

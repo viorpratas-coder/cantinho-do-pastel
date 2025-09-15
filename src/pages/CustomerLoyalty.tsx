@@ -156,7 +156,7 @@ const CustomerLoyalty = () => {
             <p className="text-muted-foreground mb-4">
               Faça login para acessar o programa de fidelidade.
             </p>
-            <Button onClick={() => navigate('/fidelidade/cliente')}>
+            <Button onClick={() => navigate('/cliente')}>
               Entrar na minha conta
             </Button>
           </CardContent>
