@@ -3,13 +3,22 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Star, Home, Gift, ShoppingCart, Pizza, Heart, User } from 'lucide-react';
 import Logo from './Logo';
 import CartButton from './CartButton';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFidelityCode } from '@/contexts/FidelityCodeContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getAllCodes, currentCustomer } = useFidelityCode();
+  const { checkSpecialAccess } = useAuth();
+  const [showAdminAccess, setShowAdminAccess] = useState(false);
+  const [accessCode, setAccessCode] = useState('');
+  const [isCheckingAccess, setIsCheckingAccess] = useState(false);
+  const navigate = useNavigate();
   
   // Contar códigos não utilizados do cliente atual
   const getCustomerStampCount = () => {
@@ -43,6 +52,40 @@ const Header = () => {
     { name: 'Exclusivos', href: '#sabores-exclusivos', icon: Heart },
   ];
 
+  // Função para verificar código de acesso especial
+  const handleSpecialAccess = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCheckingAccess(true);
+    
+    setTimeout(() => {
+      const hasAccess = checkSpecialAccess(accessCode);
+      
+      if (hasAccess) {
+        toast.success('Acesso concedido!', {
+          description: 'Redirecionando para o painel administrativo.'
+        });
+        // Ocultar o painel de acesso
+        setShowAdminAccess(false);
+        // Redirecionar para o painel administrativo
+        navigate('/admin/dashboard');
+      } else {
+        toast.error('Acesso negado', {
+          description: 'Código de acesso inválido.'
+        });
+        setAccessCode('');
+      }
+      
+      setIsCheckingAccess(false);
+    }, 500);
+  };
+
+  // Função para mostrar/ocultar acesso admin (ativa com clique no logo)
+  const handleLogoClick = () => {
+    setShowAdminAccess(true);
+    // Ocultar automaticamente após 10 segundos
+    setTimeout(() => setShowAdminAccess(false), 10000);
+  };
+
   return (
     <header className={`fixed top-0 w-full z-50 smooth-transition ${
       isScrolled ? 'bg-background/95 backdrop-blur-sm border-b border-border' : 'bg-transparent'
@@ -51,7 +94,9 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Logo showText={true} />
+            <div onClick={handleLogoClick} className="cursor-pointer">
+              <Logo showText={true} />
+            </div>
           </div>
           
           {/* Desktop Menu */}
@@ -165,6 +210,40 @@ const Header = () => {
           </div>
         )}
       </div>
+      
+      {/* Seção oculta de acesso administrativo */}
+      {showAdminAccess && (
+        <div className="fixed top-4 right-4 z-50">
+          <Card className="w-80 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Acesso Administrativo</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSpecialAccess} className="space-y-3">
+                <Input
+                  type="password"
+                  value={accessCode}
+                  onChange={(e) => setAccessCode(e.target.value)}
+                  placeholder="Código de acesso especial"
+                  className="text-sm"
+                  required
+                />
+                <Button 
+                  type="submit" 
+                  size="sm" 
+                  className="w-full"
+                  disabled={isCheckingAccess || !accessCode}
+                >
+                  {isCheckingAccess ? 'Verificando...' : 'Acessar'}
+                </Button>
+              </form>
+              <p className="text-xs text-muted-foreground mt-2">
+                Acesso exclusivo para equipe autorizada.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </header>
   );
 };

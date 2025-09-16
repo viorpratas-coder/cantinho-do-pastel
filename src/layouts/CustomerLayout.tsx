@@ -70,11 +70,11 @@ const CustomerLayout = () => {
           <div className="flex items-center justify-between p-4 border-b">
             {sidebarOpen ? (
               <div className="flex items-center">
-                <img src={Logo} alt="Cantinho do Pastel" className="h-10 w-10 object-contain mr-2" />
-                <h1 className="text-lg font-bold text-primary">Cantinho do Pastel</h1>
+                <img src={Logo} alt="Cantinho do Pastel" className="h-12 w-12 object-contain mr-3" />
+                <h1 className="text-xl font-bold text-primary">Cantinho do Pastel</h1>
               </div>
             ) : (
-              <img src={Logo} alt="Cantinho do Pastel" className="h-8 w-8 object-contain mx-auto" />
+              <img src={Logo} alt="Cantinho do Pastel" className="h-10 w-10 object-contain mx-auto" />
             )}
             <Button
               variant="ghost"

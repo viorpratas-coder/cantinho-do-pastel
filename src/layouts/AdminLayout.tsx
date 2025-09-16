@@ -11,7 +11,8 @@ import {
   LogOut,
   Menu,
   X,
-  Shield
+  Shield,
+  Settings
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Logo from '@/assets/Logo.png';
@@ -59,12 +60,19 @@ const AdminLayout = () => {
       title: 'Gestão de Clientes',
       icon: <Users className="h-5 w-5" />,
       path: '/admin/customers'
+    },
+    {
+      id: 'settings',
+      title: 'Configurações',
+      icon: <Settings className="h-5 w-5" />,
+      path: '/admin/settings'
     }
   ];
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    // Redirecionar para a página inicial em vez de /admin/login
+    navigate('/');
   };
 
   const toggleSidebar = () => {
@@ -81,11 +89,11 @@ const AdminLayout = () => {
             <div className="flex items-center justify-between p-4 border-b">
               {sidebarOpen ? (
                 <div className="flex items-center">
-                  <img src={Logo} alt="Cantinho do Pastel" className="h-10 w-10 object-contain mr-2" />
-                  <h1 className="text-lg font-bold text-primary">Admin Cantinho</h1>
+                  <img src={Logo} alt="Cantinho do Pastel" className="h-12 w-12 object-contain mr-3" />
+                  <h1 className="text-xl font-bold text-primary">Admin Cantinho</h1>
                 </div>
               ) : (
-                <img src={Logo} alt="Cantinho do Pastel" className="h-8 w-8 object-contain mx-auto" />
+                <img src={Logo} alt="Cantinho do Pastel" className="h-10 w-10 object-contain mx-auto" />
               )}
               <Button
                 variant="ghost"

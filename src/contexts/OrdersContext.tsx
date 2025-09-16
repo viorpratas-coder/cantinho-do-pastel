@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useFidelityCode } from '@/contexts/FidelityCodeContext';
 
 interface OrderItem {
   id: number;
@@ -29,6 +30,9 @@ interface OrdersContextType {
   getOrdersByCustomer: (customerPhone: string) => Order[];
   getActiveOrders: () => Order[];
   getOrderById: (orderId: string) => Order | undefined;
+  isCustomerRegistered: (phone: string) => boolean; // Nova função para verificar registro
+  requireRegistration: boolean; // Nova propriedade para controlar se o cadastro é obrigatório
+  setRequireRegistration: (require: boolean) => void; // Nova função para controlar o cadastro obrigatório
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -52,6 +56,24 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return [];
   });
 
+  // Estado para controlar se o cadastro é obrigatório
+  const [requireRegistration, setRequireRegistration] = useState<boolean>(() => {
+    const savedSetting = localStorage.getItem('requireCustomerRegistration');
+    return savedSetting ? JSON.parse(savedSetting) : false;
+  });
+
+  // Hook para verificar se o cliente está registrado
+  let fidelityContext;
+  try {
+    fidelityContext = useFidelityCode();
+  } catch (error) {
+    console.warn('FidelityCodeContext não disponível:', error);
+    fidelityContext = null;
+  }
+  
+  const getAllCustomers = fidelityContext?.getAllCustomers || (() => []);
+  const addPointsFromPurchase = fidelityContext?.addPointsFromPurchase || (() => {});
+
   // Salvar pedidos no localStorage
   useEffect(() => {
     try {
@@ -61,7 +83,27 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [orders]);
 
+  // Salvar configuração de cadastro obrigatório no localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('requireCustomerRegistration', JSON.stringify(requireRegistration));
+    } catch (error) {
+      console.error('Erro ao salvar configuração de cadastro:', error);
+    }
+  }, [requireRegistration]);
+
+  // Função para verificar se o cliente está registrado
+  const isCustomerRegistered = (phone: string): boolean => {
+    const customers = getAllCustomers();
+    return customers.some(customer => customer.customerPhone === phone);
+  };
+
   const addOrder = (orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => {
+    // Verificar se o cadastro é obrigatório e o cliente não está registrado
+    if (requireRegistration && !isCustomerRegistered(orderData.customerPhone)) {
+      throw new Error('Cliente precisa estar cadastrado para fazer pedidos');
+    }
+
     const newOrder: Order = {
       id: `order-${Date.now()}`,
       ...orderData,
@@ -70,6 +112,10 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
     
     setOrders(prev => [...prev, newOrder]);
+    
+    // Adicionar pontos ao cliente com base no valor da compra
+    addPointsFromPurchase(orderData.customerPhone, orderData.totalPrice);
+    
     return newOrder.id;
   };
 
@@ -106,7 +152,10 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       updateOrderStatus,
       getOrdersByCustomer,
       getActiveOrders,
-      getOrderById
+      getOrderById,
+      isCustomerRegistered, // Nova função
+      requireRegistration, // Nova propriedade
+      setRequireRegistration // Nova função
     }}>
       {children}
     </OrdersContext.Provider>

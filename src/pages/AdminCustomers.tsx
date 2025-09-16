@@ -13,10 +13,12 @@ import {
   User,
   MoreHorizontal,
   MessageCircle,
-  ShoppingCart
+  ShoppingCart,
+  Eye
 } from 'lucide-react';
 import { useFidelityCode } from '@/contexts/FidelityCodeContext';
 import { useOrders } from '@/contexts/OrdersContext';
+import CustomerDetailsModal from '@/components/admin/CustomerDetailsModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +39,10 @@ const AdminCustomers = () => {
   const { orders } = useOrders();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<'name' | 'level' | 'points' | 'orders' | 'spent'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const customers = getAllCustomers();
 
@@ -55,6 +61,31 @@ const AdminCustomers = () => {
     return matchesSearch && matchesFilter;
   });
 
+  // Ordenar clientes
+  const sortedCustomers = [...filteredCustomers].sort((a, b) => {
+    let comparison = 0;
+    
+    switch (sortBy) {
+      case 'name':
+        comparison = a.customerName.localeCompare(b.customerName);
+        break;
+      case 'level':
+        comparison = a.level - b.level;
+        break;
+      case 'points':
+        comparison = a.points - b.points;
+        break;
+      case 'orders':
+        comparison = getCustomerOrderHistory(a.customerPhone).length - getCustomerOrderHistory(b.customerPhone).length;
+        break;
+      case 'spent':
+        comparison = getTotalSpent(a.customerPhone) - getTotalSpent(b.customerPhone);
+        break;
+    }
+    
+    return sortOrder === 'asc' ? comparison : -comparison;
+  });
+
   // Obter histórico de pedidos para cada cliente
   const getCustomerOrderHistory = (phone: string) => {
     return orders.filter(order => order.customerPhone === phone);
@@ -64,6 +95,22 @@ const AdminCustomers = () => {
   const getRewardsClaimed = (phone: string) => {
     const customer = customers.find(c => c.customerPhone === phone);
     return customer ? customer.rewardsClaimed : 0;
+  };
+
+  // Obter valor total gasto pelo cliente
+  const getTotalSpent = (phone: string) => {
+    const customerOrders = getCustomerOrderHistory(phone);
+    return customerOrders.reduce((total, order) => total + order.totalPrice, 0);
+  };
+
+  // Obter data do último pedido
+  const getLastOrderDate = (phone: string) => {
+    const customerOrders = getCustomerOrderHistory(phone);
+    if (customerOrders.length === 0) return null;
+    
+    return customerOrders
+      .map(order => new Date(order.createdAt))
+      .sort((a, b) => b.getTime() - a.getTime())[0];
   };
 
   const getLevelName = (level: number) => {
@@ -91,6 +138,35 @@ const AdminCustomers = () => {
     const formattedPhone = phone.replace(/\D/g, '');
     const whatsappUrl = `https://wa.me/55${formattedPhone}?text=Olá ${encodeURIComponent(name)}, tudo bem?`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const handleViewDetails = (customer: any) => {
+    setSelectedCustomer(customer);
+    setIsModalOpen(true);
+  };
+
+  // Função para formatar datas
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('pt-BR');
+  };
+
+  // Função para formatar valores monetários
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL' 
+    });
+  };
+
+  // Função para lidar com ordenação
+  const handleSort = (column: 'name' | 'level' | 'points' | 'orders' | 'spent') => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
   };
 
   return (
@@ -142,21 +218,34 @@ const AdminCustomers = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-foreground">Cliente</TableHead>
+                <TableHead className="text-foreground cursor-pointer" onClick={() => handleSort('name')}>
+                  Cliente {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </TableHead>
                 <TableHead className="text-foreground">Telefone</TableHead>
-                <TableHead className="text-foreground">Nível</TableHead>
-                <TableHead className="text-foreground">Pontos</TableHead>
+                <TableHead className="text-foreground cursor-pointer" onClick={() => handleSort('level')}>
+                  Nível {sortBy === 'level' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </TableHead>
+                <TableHead className="text-foreground cursor-pointer" onClick={() => handleSort('points')}>
+                  Pontos {sortBy === 'points' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </TableHead>
                 <TableHead className="text-foreground">Carimbos</TableHead>
                 <TableHead className="text-foreground">Recompensas</TableHead>
-                <TableHead className="text-foreground">Pedidos</TableHead>
+                <TableHead className="text-foreground cursor-pointer" onClick={() => handleSort('orders')}>
+                  Pedidos {sortBy === 'orders' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </TableHead>
+                <TableHead className="text-foreground cursor-pointer" onClick={() => handleSort('spent')}>
+                  Total Gasto {sortBy === 'spent' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </TableHead>
                 <TableHead className="text-foreground">Último Pedido</TableHead>
+                <TableHead className="text-foreground">Data Registro</TableHead>
                 <TableHead className="text-foreground">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCustomers.map((customer) => {
+              {sortedCustomers.map((customer) => {
                 const orderHistory = getCustomerOrderHistory(customer.customerPhone);
-                const lastOrder = orderHistory.length > 0 ? orderHistory[orderHistory.length - 1] : null;
+                const lastOrderDate = getLastOrderDate(customer.customerPhone);
+                const totalSpent = getTotalSpent(customer.customerPhone);
                 
                 return (
                   <TableRow key={customer.customerPhone}>
@@ -202,15 +291,31 @@ const AdminCustomers = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      <span className="text-foreground font-medium">
+                        {formatCurrency(totalSpent)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4" />
-                        {lastOrder 
-                          ? new Date(lastOrder.createdAt).toLocaleDateString('pt-BR')
-                          : 'N/A'}
+                        {formatDate(lastOrderDate)}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4" />
+                        {formatDate(customer.registrationDate)}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewDetails(customer)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -244,7 +349,7 @@ const AdminCustomers = () => {
             </TableBody>
           </Table>
           
-          {filteredCustomers.length === 0 && (
+          {sortedCustomers.length === 0 && (
             <div className="text-center py-10">
               <User className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-2 text-sm font-medium text-foreground">Nenhum cliente encontrado</h3>
@@ -255,6 +360,12 @@ const AdminCustomers = () => {
           )}
         </CardContent>
       </Card>
+
+      <CustomerDetailsModal 
+        customer={selectedCustomer}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

@@ -108,24 +108,7 @@ const CustomerProfile = () => {
     navigate('/');
   };
 
-  if (!currentCustomer) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardContent className="p-8 text-center">
-            <User className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Você não está logado</h3>
-            <p className="text-muted-foreground mb-4">
-              Faça login para acessar seu perfil.
-            </p>
-            <Button onClick={() => navigate('/cliente')}>
-              Entrar na minha conta
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Removemos a verificação de autenticação aqui, pois agora é feita pelo CustomerRouteGuard
 
   return (
     <div className="max-w-4xl mx-auto">

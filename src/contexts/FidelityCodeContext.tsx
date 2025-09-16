@@ -10,17 +10,18 @@ interface FidelityCode {
   createdAt: Date;
 }
 
-interface CustomerFidelityData {
+export interface CustomerFidelityData {
   customerName: string;
   customerPhone: string;
   stamps: FidelityCode[];
   lastRewardDate?: Date;
-  profileImage?: string; // Adicionando suporte para foto de perfil
-  level: number; // Nível do cliente no programa de fidelidade
-  points: number; // Pontos acumulados
-  totalSpent: number; // Valor total gasto
-  rewardsClaimed: number; // Recompensas resgatadas
-  lastActivityDate?: Date; // Data da última atividade
+  profileImage?: string;
+  level: number;
+  points: number;
+  totalSpent: number;
+  rewardsClaimed: number;
+  lastActivityDate?: Date;
+  registrationDate: Date; // Adicionando data de registro
 }
 
 interface FidelityCodeContextType {
@@ -39,6 +40,7 @@ interface FidelityCodeContextType {
   getStampCount: (name: string, phone: string) => number;
   resetStamps: (name: string, phone: string) => void;
   addPoints: (phone: string, points: number) => void; // Adicionar pontos
+  addPointsFromPurchase: (phone: string, amount: number) => void; // Adicionar pontos com base na compra
   claimReward: (phone: string) => boolean; // Resgatar recompensa
   getCustomerLevel: (points: number) => number; // Obter nível do cliente
   
@@ -171,6 +173,28 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Customer functions
   const registerCustomer = (name: string, phone: string) => {
+    // Verificar se o cliente já existe
+    const savedCustomers = localStorage.getItem('fidelityCustomers');
+    let customers: CustomerFidelityData[] = [];
+    
+    if (savedCustomers) {
+      try {
+        customers = JSON.parse(savedCustomers);
+      } catch (error) {
+        console.error('Erro ao parsear clientes:', error);
+      }
+    }
+    
+    // Verificar se o cliente já está registrado
+    const existingCustomer = customers.find(c => c.customerPhone === phone);
+    
+    if (existingCustomer) {
+      // Se já existe, apenas autenticar
+      setCurrentCustomer(existingCustomer);
+      return;
+    }
+    
+    // Criar novo cliente
     const customerData: CustomerFidelityData = {
       customerName: name,
       customerPhone: phone,
@@ -180,9 +204,21 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       level: 1,
       points: 0,
       totalSpent: 0,
-      rewardsClaimed: 0
+      rewardsClaimed: 0,
+      registrationDate: new Date() // Adicionando data de registro
     };
     
+    // Adicionar à lista de clientes
+    customers.push(customerData);
+    
+    // Salvar no localStorage
+    try {
+      localStorage.setItem('fidelityCustomers', JSON.stringify(customers));
+    } catch (error) {
+      console.error('Erro ao salvar cliente:', error);
+    }
+    
+    // Definir como cliente atual
     setCurrentCustomer(customerData);
   };
 
@@ -235,6 +271,7 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
           points: points,
           totalSpent: 0,
           rewardsClaimed: 0,
+          registrationDate: new Date(),
           lastActivityDate: new Date()
         });
       }
@@ -243,6 +280,17 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } catch (error) {
       console.error('Erro ao adicionar pontos ao cliente:', error);
     }
+  };
+
+  // Função para adicionar pontos ao cliente com base no valor gasto
+  const addPointsFromPurchase = (phone: string, amount: number) => {
+    // Calcular pontos com base no valor gasto (1 ponto a cada R$ 10,00)
+    const pointsToAdd = Math.floor(amount / 10);
+    
+    if (pointsToAdd <= 0) return;
+    
+    // Usar a função addPoints existente
+    addPoints(phone, pointsToAdd);
   };
 
   // Função para resgatar recompensa
@@ -291,7 +339,8 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       level: 1,
       points: 0,
       totalSpent: 0,
-      rewardsClaimed: 0
+      rewardsClaimed: 0,
+      registrationDate: new Date() // Adicionando data de registro
     };
     
     if (savedCustomers) {
@@ -304,7 +353,8 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (existingCustomer) {
           customerData = {
             ...customerData,
-            profileImage: existingCustomer.profileImage
+            profileImage: existingCustomer.profileImage,
+            registrationDate: existingCustomer.registrationDate ? new Date(existingCustomer.registrationDate) : new Date()
           };
         }
       } catch (error) {
@@ -387,7 +437,8 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
           level: 1,
           points: 0,
           totalSpent: 0,
-          rewardsClaimed: 0
+          rewardsClaimed: 0,
+          registrationDate: new Date()
         });
       }
       
@@ -416,7 +467,7 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return null;
   };
 
-  // Função para obter todos os clientes cadastrados
+  // Função para obter todos os clientes cadastrados com dados adicionais
   const getAllCustomers = (): CustomerFidelityData[] => {
     try {
       const savedCustomers = localStorage.getItem('fidelityCustomers');
@@ -425,7 +476,8 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const customers = JSON.parse(savedCustomers);
         return customers.map((customer: any) => ({
           ...customer,
-          stamps: customer.stamps || []
+          stamps: customer.stamps || [],
+          registrationDate: customer.registrationDate ? new Date(customer.registrationDate) : new Date()
         }));
       }
     } catch (error) {
@@ -452,6 +504,7 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       resetStamps,
       registerCustomer,
       addPoints,
+      addPointsFromPurchase, // Nova função
       claimReward,
       getCustomerLevel,
       

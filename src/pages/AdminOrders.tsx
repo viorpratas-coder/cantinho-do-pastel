@@ -15,9 +15,12 @@ import {
   Calendar,
   MoreHorizontal,
   ChefHat,
-  ShoppingCart
+  ShoppingCart,
+  Eye
 } from 'lucide-react';
 import { useOrders } from '@/contexts/OrdersContext';
+import { useFidelityCode } from '@/contexts/FidelityCodeContext';
+import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,8 +38,14 @@ import {
 
 const AdminOrders = () => {
   const { orders, updateOrderStatus } = useOrders();
+  const { getAllCustomers } = useFidelityCode();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Obter todos os clientes para referência
+  const customers = getAllCustomers();
 
   // Filtrar pedidos com base na pesquisa e filtros
   const filteredOrders = orders.filter(order => {
@@ -58,6 +67,17 @@ const AdminOrders = () => {
     return matchesSearch && matchesFilter;
   });
 
+  // Verificar se o cliente está cadastrado no programa de fidelidade
+  const isCustomerRegistered = (phone: string) => {
+    return customers.some(customer => customer.customerPhone === phone);
+  };
+
+  // Obter nível do cliente
+  const getCustomerLevel = (phone: string) => {
+    const customer = customers.find(c => c.customerPhone === phone);
+    return customer ? customer.level : 0;
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -75,8 +95,47 @@ const AdminOrders = () => {
     }
   };
 
+  const getLevelBadge = (level: number) => {
+    const levelNames = {
+      5: 'Diamante',
+      4: 'Ouro',
+      3: 'Prata',
+      2: 'Bronze',
+      1: 'Iniciante',
+      0: 'Não cadastrado'
+    };
+
+    const levelColors = {
+      5: 'bg-blue-500',
+      4: 'bg-yellow-500',
+      3: 'bg-gray-400',
+      2: 'bg-amber-800',
+      1: 'bg-gray-200',
+      0: 'bg-muted'
+    };
+
+    return (
+      <Badge className={levelColors[level as keyof typeof levelColors] || 'bg-muted'}>
+        {levelNames[level as keyof typeof levelNames] || 'Desconhecido'}
+      </Badge>
+    );
+  };
+
   const handleStatusChange = (orderId: string, newStatus: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled') => {
     updateOrderStatus(orderId, newStatus);
+  };
+
+  const handleViewDetails = (order: any) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
+  // Função para formatar valores monetários
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL' 
+    });
   };
 
   return (
@@ -140,6 +199,7 @@ const AdminOrders = () => {
                 <TableHead className="text-foreground">ID do Pedido</TableHead>
                 <TableHead className="text-foreground">Cliente</TableHead>
                 <TableHead className="text-foreground">Telefone</TableHead>
+                <TableHead className="text-foreground">Nível</TableHead>
                 <TableHead className="text-foreground">Itens</TableHead>
                 <TableHead className="text-foreground">Total</TableHead>
                 <TableHead className="text-foreground">Status</TableHead>
@@ -148,103 +208,123 @@ const AdminOrders = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>
-                    <span className="font-mono text-foreground">#{order.id.substring(0, 8)}</span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-foreground">{order.customerName}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-foreground">{order.customerPhone}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-foreground">{order.items.length} item(s)</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium text-foreground">R$ {order.totalPrice.toFixed(2)}</span>
-                  </TableCell>
-                  <TableCell>
-                    {getStatusBadge(order.status)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(order.createdAt).toLocaleDateString('pt-BR')}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      {order.status === 'pending' && (
+              {filteredOrders.map((order) => {
+                const customerRegistered = isCustomerRegistered(order.customerPhone);
+                const customerLevel = customerRegistered ? getCustomerLevel(order.customerPhone) : 0;
+                
+                return (
+                  <TableRow key={order.id}>
+                    <TableCell>
+                      <span className="font-mono text-foreground">#{order.id.substring(0, 8)}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-foreground">{order.customerName}</span>
+                        {!customerRegistered && (
+                          <Badge variant="outline" className="ml-2 text-xs">
+                            Não cadastrado
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-foreground">{order.customerPhone}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {getLevelBadge(customerLevel)}
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-foreground">{order.items.length} item(s)</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-medium text-foreground">{formatCurrency(order.totalPrice)}</span>
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(order.status)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4" />
+                        {new Date(order.createdAt).toLocaleDateString('pt-BR')}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
                         <Button 
-                          size="sm" 
-                          onClick={() => handleStatusChange(order.id, 'preparing')}
-                          className="bg-blue-500 hover:bg-blue-600"
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewDetails(order)}
                         >
-                          <ChefHat className="h-4 w-4 mr-1" />
-                          Preparar
+                          <Eye className="h-4 w-4" />
                         </Button>
-                      )}
-                      {order.status === 'preparing' && (
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleStatusChange(order.id, 'ready')}
-                          className="bg-green-500 hover:bg-green-600"
-                        >
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Pronto
-                        </Button>
-                      )}
-                      {order.status === 'ready' && (
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleStatusChange(order.id, 'delivered')}
-                          className="bg-purple-500 hover:bg-purple-600"
-                        >
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Entregue
-                        </Button>
-                      )}
-                      {(order.status === 'pending' || order.status === 'preparing') && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'pending')}>
-                              Marcar como pendente
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'preparing')}>
-                              Marcar como em preparo
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'ready')}>
-                              Marcar como pronto
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'delivered')}>
-                              Marcar como entregue
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleStatusChange(order.id, 'cancelled')}
-                              className="text-red-600"
-                            >
-                              Cancelar pedido
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        {order.status === 'pending' && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleStatusChange(order.id, 'preparing')}
+                            className="bg-blue-500 hover:bg-blue-600"
+                          >
+                            <ChefHat className="h-4 w-4 mr-1" />
+                            Preparar
+                          </Button>
+                        )}
+                        {order.status === 'preparing' && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleStatusChange(order.id, 'ready')}
+                            className="bg-green-500 hover:bg-green-600"
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Pronto
+                          </Button>
+                        )}
+                        {order.status === 'ready' && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleStatusChange(order.id, 'delivered')}
+                            className="bg-purple-500 hover:bg-purple-600"
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Entregue
+                          </Button>
+                        )}
+                        {(order.status === 'pending' || order.status === 'preparing') && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'pending')}>
+                                Marcar como pendente
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'preparing')}>
+                                Marcar como em preparo
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'ready')}>
+                                Marcar como pronto
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'delivered')}>
+                                Marcar como entregue
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleStatusChange(order.id, 'cancelled')}
+                                className="text-red-600"
+                              >
+                                Cancelar pedido
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
           
@@ -259,6 +339,13 @@ const AdminOrders = () => {
           )}
         </CardContent>
       </Card>
+
+      <OrderDetailsModal 
+        order={selectedOrder}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onUpdateStatus={handleStatusChange}
+      />
     </div>
   );
 };

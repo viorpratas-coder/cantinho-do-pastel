@@ -3,10 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, Plus, Minus, ShoppingCart, MessageCircle, Info, CreditCard, QrCode, Wallet } from 'lucide-react';
+import { X, Plus, Minus, ShoppingCart, MessageCircle, Info, CreditCard, QrCode, Wallet, AlertTriangle } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { usePayment } from '@/contexts/PaymentContext';
+import { useOrders } from '@/contexts/OrdersContext';
+import { useFidelityCode } from '@/contexts/FidelityCodeContext';
 import logoImage from '@/assets/Logo.png';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import OrderRegistrationGuard from '@/components/OrderRegistrationGuard';
 
 const Cart = () => {
   const { 
@@ -23,7 +28,12 @@ const Cart = () => {
   } = useCart();
   
   const { getDefaultPaymentMethod } = usePayment();
+  const { addOrder, requireRegistration } = useOrders();
+  const { currentCustomer } = useFidelityCode();
+  const navigate = useNavigate();
+  
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('whatsapp');
+  const [showRegistration, setShowRegistration] = useState(false);
 
   // Complementos pré-definidos
   const predefinedFillings = [
@@ -33,7 +43,58 @@ const Cart = () => {
     { name: 'Presunto', price: 2.00 }
   ];
 
+  const handleRegistrationComplete = () => {
+    setShowRegistration(false);
+    // Após o cadastro, continuar com o pedido
+    sendOrderToWhatsApp();
+  };
+
   const sendOrderToWhatsApp = () => {
+    // Verificar se o cadastro é obrigatório e o cliente não está cadastrado
+    if (requireRegistration && cartItems.length > 0 && !currentCustomer) {
+      // Se não estiver cadastrado, mostrar o formulário de cadastro
+      setShowRegistration(true);
+      return;
+    }
+    
+    // Criar o pedido no sistema antes de enviar para o WhatsApp
+    if (cartItems.length > 0 && currentCustomer) {
+      // Converter itens do carrinho para o formato do pedido
+      const orderItems = cartItems.map(item => ({
+        id: item.id,
+        productId: item.productId,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        observations: item.observations,
+        additionalFillings: item.additionalFillings
+      }));
+      
+      // Calcular tempo estimado (5 minutos por item, mínimo 15 minutos)
+      const estimatedTime = Math.max(15, cartItems.reduce((total, item) => total + (item.quantity * 5), 0));
+      
+      try {
+        // Adicionar pedido ao sistema
+        const orderId = addOrder({
+          customerName: currentCustomer.customerName,
+          customerPhone: currentCustomer.customerPhone,
+          items: orderItems,
+          status: 'pending',
+          estimatedTime: estimatedTime,
+          totalPrice: getTotalPrice()
+        });
+        
+        toast.success('Pedido registrado!', {
+          description: `Seu pedido #${orderId.substring(0, 8)} foi registrado com sucesso.`
+        });
+      } catch (error: any) {
+        toast.error('Erro ao registrar pedido', {
+          description: error.message || 'Ocorreu um erro ao registrar seu pedido.'
+        });
+        return;
+      }
+    }
+    
     let message = 'Olá! Gostaria de fazer o seguinte pedido:%0A%0A';
     
     if (cartItems.length > 0) {
@@ -125,6 +186,63 @@ const Cart = () => {
 
   if (!isCartOpen) {
     return null;
+  }
+
+  // Se precisar mostrar o formulário de cadastro, exibir apenas isso
+  if (showRegistration && cartItems.length > 0 && requireRegistration) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-hidden">
+        {/* Overlay */}
+        <div 
+          className="fixed inset-0 bg-black/50 transition-opacity duration-300 ease-in-out"
+          onClick={closeCart}
+        />
+        
+        {/* Registration Panel */}
+        <div className="fixed inset-y-0 right-0 max-w-full flex">
+          <div className="relative w-screen max-w-md transition-transform duration-300 ease-in-out transform translate-x-0">
+            <div className="h-full flex flex-col bg-background border-l border-border">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <div className="flex items-center">
+                  <img 
+                    src={logoImage} 
+                    alt="Cantinho do Pastel" 
+                    className="h-8 w-auto object-contain mr-2"
+                  />
+                  <h2 className="text-xl font-bold">Cadastro Necessário</h2>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={closeCart}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+              
+              {/* Registration Form */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <div className="flex items-start">
+                    <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-medium text-yellow-500">Cadastro Obrigatório</h3>
+                      <p className="text-sm text-yellow-500/80">
+                        Para fazer pedidos, é necessário estar cadastrado no nosso programa de fidelidade.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <OrderRegistrationGuard 
+                  onRegistrationComplete={handleRegistrationComplete}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -339,6 +457,21 @@ const Cart = () => {
                     <span className="font-semibold">Total:</span>
                     <span className="text-xl font-bold text-accent">R$ {getTotalPrice().toFixed(2)}</span>
                   </div>
+                  
+                  {/* Aviso de cadastro obrigatório */}
+                  {requireRegistration && !currentCustomer && (
+                    <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                      <div className="flex items-start">
+                        <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0" />
+                        <div>
+                          <h3 className="font-medium text-yellow-500">Cadastro Obrigatório</h3>
+                          <p className="text-sm text-yellow-500/80">
+                            É necessário se cadastrar para finalizar o pedido. Você será redirecionado após clicar em "Finalizar Pedido".
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Opções de pagamento */}
                   <div className="mb-4">

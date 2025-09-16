@@ -146,24 +146,7 @@ const CustomerLoyalty = () => {
     }
   };
 
-  if (!currentCustomer) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardContent className="p-8 text-center">
-            <User className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Você não está logado</h3>
-            <p className="text-muted-foreground mb-4">
-              Faça login para acessar o programa de fidelidade.
-            </p>
-            <Button onClick={() => navigate('/cliente')}>
-              Entrar na minha conta
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Removemos a verificação de autenticação aqui, pois agora é feita pelo CustomerRouteGuard
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -241,7 +224,7 @@ const CustomerLoyalty = () => {
                   <p className="text-sm text-muted-foreground">+10 pts por carimbo</p>
                 </div>
                 
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <div className="bg-secondary p-4 rounded-lg">
                   <div className="flex items-center mb-2">
                     <Gift className="w-5 h-5 mr-2 text-green-600" />
                     <h3 className="font-semibold">Recompensas</h3>

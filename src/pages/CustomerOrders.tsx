@@ -13,12 +13,14 @@ import {
   Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const CustomerOrders = () => {
   const { orders } = useOrders();
   const { currentCustomer } = useFidelityCode();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const navigate = useNavigate();
 
   // Status descriptions
   const statusDescriptions = {
@@ -134,7 +136,7 @@ const CustomerOrders = () => {
                   ? 'Nenhum pedido corresponde aos critérios de busca.' 
                   : 'Você ainda não fez nenhum pedido.'}
               </p>
-              <Button>Nova Compra</Button>
+              <Button onClick={() => navigate('/')}>Nova Compra</Button>
             </div>
           ) : (
             <div className="space-y-4">

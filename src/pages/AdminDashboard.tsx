@@ -46,7 +46,8 @@ const AdminDashboard = () => {
     fidelityPoints: 0,
     salesData: [] as { date: string; sales: number }[],
     orderStatusData: [] as { status: string; count: number }[],
-    topCustomers: [] as { name: string; orders: number }[]
+    topCustomers: [] as { name: string; orders: number; totalSpent: number }[],
+    customerLevels: [] as { level: string; count: number }[]
   });
 
   // Cores para os gráficos
@@ -56,14 +57,33 @@ const AdminDashboard = () => {
     orders: 'hsl(var(--primary))'
   };
 
+  // Função para formatar valores monetários
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL' 
+    });
+  };
+
+  // Função para obter o nome do nível do cliente
+  const getLevelName = (level: number) => {
+    switch (level) {
+      case 5: return 'Diamante';
+      case 4: return 'Ouro';
+      case 3: return 'Prata';
+      case 2: return 'Bronze';
+      default: return 'Iniciante';
+    }
+  };
+
   useEffect(() => {
     // Calcular dados do dashboard
     const allCustomers = getAllCustomers();
     const usedCodes = getUsedCodes();
     const allCodes = getAllCodes();
     
-    // Total de vendas
-    const totalSales = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // Total de vendas (baseado nos pedidos registrados)
+    const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
     
     // Pedidos ativos (não entregues)
     const activeOrders = orders.filter(order => 
@@ -78,16 +98,24 @@ const AdminDashboard = () => {
     // Pontos de fidelidade distribuídos (códigos usados)
     const fidelityPoints = usedCodes.length;
     
-    // Dados de vendas para o gráfico (simulados)
-    const salesData = [
-      { date: 'Seg', sales: 1200 },
-      { date: 'Ter', sales: 1900 },
-      { date: 'Qua', sales: 1500 },
-      { date: 'Qui', sales: 2200 },
-      { date: 'Sex', sales: 1800 },
-      { date: 'Sáb', sales: 2500 },
-      { date: 'Dom', sales: 1700 }
-    ];
+    // Dados de vendas para o gráfico (baseados nos pedidos dos últimos 7 dias)
+    const salesData = [];
+    const today = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateString = date.toLocaleDateString('pt-BR', { weekday: 'short' });
+      
+      // Filtrar pedidos do dia
+      const dayOrders = orders.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate.toDateString() === date.toDateString();
+      });
+      
+      const daySales = dayOrders.reduce((sum, order) => sum + order.totalPrice, 0);
+      salesData.push({ date: dateString, sales: daySales });
+    }
     
     // Dados de status dos pedidos
     const orderStatusData = [
@@ -98,14 +126,50 @@ const AdminDashboard = () => {
       { status: 'Cancelado', count: orders.filter(o => o.status === 'cancelled').length }
     ];
     
-    // Clientes mais fiéis (simulados)
-    const topCustomers = [
-      { name: 'Carlos Silva', orders: 15 },
-      { name: 'Maria Oliveira', orders: 12 },
-      { name: 'João Santos', orders: 10 },
-      { name: 'Ana Costa', orders: 8 },
-      { name: 'Pedro Almeida', orders: 7 }
-    ];
+    // Clientes mais fiéis (baseados no número de pedidos e valor gasto)
+    const customerOrderCounts: { [key: string]: { name: string; orders: number; totalSpent: number; phone: string } } = {};
+    
+    // Contar pedidos por cliente
+    orders.forEach(order => {
+      if (!customerOrderCounts[order.customerPhone]) {
+        customerOrderCounts[order.customerPhone] = {
+          name: order.customerName,
+          orders: 0,
+          totalSpent: 0,
+          phone: order.customerPhone
+        };
+      }
+      
+      customerOrderCounts[order.customerPhone].orders += 1;
+      customerOrderCounts[order.customerPhone].totalSpent += order.totalPrice;
+    });
+    
+    // Converter para array e ordenar por número de pedidos
+    const sortedCustomers = Object.values(customerOrderCounts)
+      .sort((a, b) => b.orders - a.orders)
+      .slice(0, 5);
+    
+    const topCustomers = sortedCustomers.map(customer => ({
+      name: customer.name,
+      orders: customer.orders,
+      totalSpent: customer.totalSpent
+    }));
+    
+    // Distribuição de níveis dos clientes
+    const levelCounts: { [key: number]: number } = {
+      1: 0, 2: 0, 3: 0, 4: 0, 5: 0
+    };
+    
+    allCustomers.forEach(customer => {
+      levelCounts[customer.level] = (levelCounts[customer.level] || 0) + 1;
+    });
+    
+    const customerLevels = Object.entries(levelCounts)
+      .filter(([_, count]) => count > 0)
+      .map(([level, count]) => ({
+        level: getLevelName(parseInt(level)),
+        count
+      }));
     
     setDashboardData({
       totalSales,
@@ -114,9 +178,37 @@ const AdminDashboard = () => {
       fidelityPoints,
       salesData,
       orderStatusData,
-      topCustomers
+      topCustomers,
+      customerLevels
     });
   }, [cartItems, orders, getAllCodes, getUsedCodes, getAllCustomers]);
+
+  // Calcular métricas adicionais
+  const calculateAdditionalMetrics = () => {
+    // Média de pedidos por dia
+    const daysWithOrders = new Set(orders.map(order => 
+      new Date(order.createdAt).toDateString()
+    )).size;
+    
+    const averageOrdersPerDay = daysWithOrders > 0 ? 
+      (orders.length / daysWithOrders).toFixed(1) : '0';
+    
+    // Ticket médio
+    const averageTicket = orders.length > 0 ? 
+      (dashboardData.totalSales / orders.length).toFixed(2) : '0';
+    
+    // Taxa de conversão (pedidos / clientes cadastrados)
+    const conversionRate = dashboardData.totalCustomers > 0 ? 
+      ((orders.length / dashboardData.totalCustomers) * 100).toFixed(1) : '0';
+    
+    return {
+      averageOrdersPerDay,
+      averageTicket,
+      conversionRate
+    };
+  };
+
+  const { averageOrdersPerDay, averageTicket, conversionRate } = calculateAdditionalMetrics();
 
   return (
     <div className="space-y-6">
@@ -135,7 +227,7 @@ const AdminDashboard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">R$ {dashboardData.totalSales.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-foreground">{formatCurrency(dashboardData.totalSales)}</div>
             <p className="text-xs text-muted-foreground">+8% em relação ao período anterior</p>
           </CardContent>
         </Card>
@@ -194,6 +286,7 @@ const AdminDashboard = () => {
                       borderColor: 'hsl(var(--border))',
                       color: 'hsl(var(--foreground))'
                     }} 
+                    formatter={(value) => [formatCurrency(Number(value)), 'Vendas']}
                   />
                   <Line 
                     type="monotone" 
@@ -256,9 +349,12 @@ const AdminDashboard = () => {
                     </Badge>
                     <span className="font-medium text-foreground">{customer.name}</span>
                   </div>
-                  <Badge variant="outline">
-                    {customer.orders} pedidos
-                  </Badge>
+                  <div className="text-right">
+                    <div className="font-medium">{customer.orders} pedidos</div>
+                    <div className="text-sm text-muted-foreground">
+                      {formatCurrency(customer.totalSpent)}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -278,21 +374,34 @@ const AdminDashboard = () => {
               <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Média de Pedidos por Dia</span>
-                  <span className="font-bold text-lg text-foreground">24</span>
+                  <span className="font-bold text-lg text-foreground">{averageOrdersPerDay}</span>
                 </div>
               </div>
               
               <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Ticket Médio</span>
-                  <span className="font-bold text-lg text-foreground">R$ 32,50</span>
+                  <span className="font-bold text-lg text-foreground">{formatCurrency(parseFloat(averageTicket))}</span>
                 </div>
               </div>
               
               <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Taxa de Conversão</span>
-                  <span className="font-bold text-lg text-foreground">68%</span>
+                  <span className="font-bold text-lg text-foreground">{conversionRate}%</span>
+                </div>
+              </div>
+              
+              {/* Distribuição de níveis dos clientes */}
+              <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+                <h4 className="font-medium mb-2">Distribuição de Níveis</h4>
+                <div className="space-y-2">
+                  {dashboardData.customerLevels.map((level, index) => (
+                    <div key={index} className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{level.level}</span>
+                      <span className="font-medium">{level.count} clientes</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

@@ -82,7 +82,7 @@ const CustomerFidelityCard: React.FC<CustomerFidelityCardProps> = ({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center">
-          <div className="w-full mb-6 p-4 bg-secondary rounded-lg">
+          <div className="w-full mb-6 p-4 bg-secondary rounded-lg border">
             <div className="flex items-center">
               <div className="bg-primary/10 p-2 rounded-full mr-3">
                 <Star className="w-5 h-5 text-primary" />
@@ -101,7 +101,7 @@ const CustomerFidelityCard: React.FC<CustomerFidelityCardProps> = ({
           />
           
           {canClaimReward && (
-            <div className="mt-6 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-lg w-full text-center">
+            <div className="mt-6 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-3 rounded-lg w-full text-center border border-green-500">
               <div className="flex items-center justify-center">
                 <Trophy className="w-5 h-5 mr-2" />
                 <span className="font-bold">Parabéns! Você ganhou um pastel grátis!</span>
@@ -113,25 +113,25 @@ const CustomerFidelityCard: React.FC<CustomerFidelityCardProps> = ({
           )}
           
           {isRegularCustomer && !canClaimReward && (
-            <div className="mt-4 flex items-center text-primary">
+            <div className="mt-4 flex items-center text-yellow-400">
               <Award className="w-5 h-5 mr-2" />
               <span className="font-medium">Cliente Ouro!</span>
             </div>
           )}
           
           {isFirstVisit && (
-            <div className="mt-4 text-center text-muted-foreground">
+            <div className="mt-4 text-center text-gray-400">
               <p>Comece a acumular carimbos para ganhar recompensas!</p>
             </div>
           )}
           
           {/* Barra de progresso adicional */}
           <div className="w-full mt-6">
-            <div className="flex justify-between text-sm mb-1">
+            <div className="flex justify-between text-sm mb-1 text-muted-foreground">
               <span>Progresso</span>
               <span>{Math.round((stampCount / 5) * 100)}%</span>
             </div>
-            <div className="w-full bg-muted rounded-full h-2.5">
+            <div className="w-full bg-secondary rounded-full h-2.5">
               <div 
                 className="bg-primary h-2.5 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${(stampCount / 5) * 100}%` }}
@@ -150,7 +150,7 @@ const CustomerFidelityCard: React.FC<CustomerFidelityCardProps> = ({
                 {favoriteProducts.map(product => (
                   <div 
                     key={product.id} 
-                    className="p-2 bg-muted rounded text-center text-sm"
+                    className="p-2 bg-secondary rounded text-center text-sm border"
                   >
                     <div className="font-medium truncate">{product.name}</div>
                     <div className="text-xs text-muted-foreground truncate">{product.category}</div>
