@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { User, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
-const CustomerLogin = () => {
+const SupabaseCustomerLogin = () => {
   const { authenticateCustomer, registerCustomer, isLoading } = useSupabaseFidelity();
   const navigate = useNavigate();
   
@@ -158,4 +158,4 @@ const CustomerLogin = () => {
   );
 };
 
-export default CustomerLogin;
+export default SupabaseCustomerLogin;

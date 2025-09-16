@@ -6,12 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Star, Trophy, Award, Zap, Crown, Heart } from 'lucide-react';
 import StampProgress from '@/components/StampProgress';
 
-interface CustomerFidelityCardProps {
+interface SupabaseCustomerFidelityCardProps {
   customerName: string;
   customerPhone: string;
 }
 
-const CustomerFidelityCard: React.FC<CustomerFidelityCardProps> = ({ 
+const SupabaseCustomerFidelityCard: React.FC<SupabaseCustomerFidelityCardProps> = ({ 
   customerName, 
   customerPhone 
 }) => {
@@ -189,4 +189,4 @@ const CustomerFidelityCard: React.FC<CustomerFidelityCardProps> = ({
   );
 };
 
-export default CustomerFidelityCard;
+export default SupabaseCustomerFidelityCard;

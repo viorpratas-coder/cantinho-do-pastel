@@ -22,11 +22,13 @@ import {
 import { toast } from 'sonner';
 import SupabaseCustomerFidelityCard from '@/components/SupabaseCustomerFidelityCard';
 
-const CustomerLoyalty = () => {
+const SupabaseCustomerLoyalty = () => {
   const { 
     markCodeAsUsed, 
     currentCustomer, 
+    addPoints,
     claimReward,
+    getStampCount,
     isLoading
   } = useSupabaseFidelity();
   
@@ -366,4 +368,4 @@ const CustomerLoyalty = () => {
   );
 };
 
-export default CustomerLoyalty;
+export default SupabaseCustomerLoyalty;

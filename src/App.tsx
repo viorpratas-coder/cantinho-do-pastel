@@ -29,76 +29,87 @@ import CustomerProfile from "./pages/CustomerProfile";
 import CustomerOrders from "./pages/CustomerOrders";
 import CustomerLoyalty from "./pages/CustomerLoyalty";
 import CustomerRouteGuard from "@/components/CustomerRouteGuard";
+import { SupabaseFidelityProvider } from "./contexts/SupabaseFidelityContext";
+import { SupabaseAuthProvider } from "./contexts/SupabaseAuthContext";
+import SupabaseAdminLogin from "./components/SupabaseAdminLogin";
+import SupabaseCustomerLoyalty from "./pages/SupabaseCustomerLoyalty";
+import SupabaseAdminLoyalty from "./pages/SupabaseAdminLoyalty";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <PaymentProvider>
-        <PreferencesProvider>
-          <OrdersProvider>
-            <FidelityCodeProvider>
-              <CartProvider>
-                <ReviewsProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                      <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/product/:id" element={<ProductDetails />} />
-                        <Route path="/fidelidade" element={<LoyaltyProgram />} />
-                        {/* Removida a rota de login administrativo direto */}
-                        
-                        {/* Área Administrativa - Protegida */}
-                        <Route path="/admin" element={<AdminLayout />}>
-                          <Route path="dashboard" element={<AdminDashboard />} />
-                          <Route path="orders" element={<AdminOrders />} />
-                          <Route path="loyalty" element={<AdminLoyalty />} />
-                          <Route path="payments" element={<AdminPayments />} />
-                          <Route path="customers" element={<AdminCustomers />} />
-                          <Route path="settings" element={<AdminSettings />} />
-                        </Route>
-                        
-                        {/* Área do Cliente com Layout Unificado */}
-                        <Route path="/cliente" element={<CustomerLayout />}> 
-                          <Route index element={
-                            <CustomerRouteGuard>
-                              <CustomerProfile />
-                            </CustomerRouteGuard>
-                          } />
-                          <Route path="perfil" element={
-                            <CustomerRouteGuard>
-                              <CustomerProfile />
-                            </CustomerRouteGuard>
-                          } />
-                          <Route path="pedidos" element={
-                            <CustomerRouteGuard>
-                              <CustomerOrders />
-                            </CustomerRouteGuard>
-                          } />
-                          <Route path="fidelidade" element={
-                            <CustomerRouteGuard>
-                              <CustomerLoyalty />
-                            </CustomerRouteGuard>
-                          } />
-                        </Route>
-                        
-                        {/* Outras rotas */}
-                        <Route path="/pagamento/metodos" element={<PaymentMethods />} />
-                        
-                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </ReviewsProvider>
-              </CartProvider>
-            </FidelityCodeProvider>
-          </OrdersProvider>
-        </PreferencesProvider>
-      </PaymentProvider>
+      <SupabaseAuthProvider>
+        <PaymentProvider>
+          <PreferencesProvider>
+            <OrdersProvider>
+              <FidelityCodeProvider>
+                <SupabaseFidelityProvider>
+                  <CartProvider>
+                    <ReviewsProvider>
+                      <TooltipProvider>
+                        <Toaster />
+                        <Sonner />
+                        <BrowserRouter>
+                          <Routes>
+                            <Route path="/" element={<Index />} />
+                            <Route path="/product/:id" element={<ProductDetails />} />
+                            <Route path="/fidelidade" element={<LoyaltyProgram />} />
+                            
+                            {/* Login administrativo */}
+                            <Route path="/admin/login" element={<SupabaseAdminLogin />} />
+                            
+                            {/* Área Administrativa - Protegida */}
+                            <Route path="/admin" element={<AdminLayout />}>
+                              <Route path="dashboard" element={<AdminDashboard />} />
+                              <Route path="orders" element={<AdminOrders />} />
+                              <Route path="loyalty" element={<SupabaseAdminLoyalty />} />
+                              <Route path="payments" element={<AdminPayments />} />
+                              <Route path="customers" element={<AdminCustomers />} />
+                              <Route path="settings" element={<AdminSettings />} />
+                            </Route>
+                            
+                            {/* Área do Cliente com Layout Unificado */}
+                            <Route path="/cliente" element={<CustomerLayout />}> 
+                              <Route index element={
+                                <CustomerRouteGuard>
+                                  <CustomerProfile />
+                                </CustomerRouteGuard>
+                              } />
+                              <Route path="perfil" element={
+                                <CustomerRouteGuard>
+                                  <CustomerProfile />
+                                </CustomerRouteGuard>
+                              } />
+                              <Route path="pedidos" element={
+                                <CustomerRouteGuard>
+                                  <CustomerOrders />
+                                </CustomerRouteGuard>
+                              } />
+                              <Route path="fidelidade" element={
+                                <CustomerRouteGuard>
+                                  <SupabaseCustomerLoyalty />
+                                </CustomerRouteGuard>
+                              } />
+                            </Route>
+                            
+                            {/* Outras rotas */}
+                            <Route path="/pagamento/metodos" element={<PaymentMethods />} />
+                            
+                            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                            <Route path="*" element={<NotFound />} />
+                          </Routes>
+                        </BrowserRouter>
+                      </TooltipProvider>
+                    </ReviewsProvider>
+                  </CartProvider>
+                </SupabaseFidelityProvider>
+              </FidelityCodeProvider>
+            </OrdersProvider>
+          </PreferencesProvider>
+        </PaymentProvider>
+      </SupabaseAuthProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

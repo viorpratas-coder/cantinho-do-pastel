@@ -19,7 +19,6 @@ import {
   Star
 } from 'lucide-react';
 import { useSupabaseFidelity } from '@/contexts/SupabaseFidelityContext';
-import { useCart } from '@/contexts/CartContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +35,7 @@ import {
 } from '@/components/ui/table';
 import { toast } from 'sonner';
 
-const AdminLoyalty = () => {
+const SupabaseAdminLoyalty = () => {
   const { 
     getAllCodes, 
     markCodeAsUsed, 
@@ -47,7 +46,6 @@ const AdminLoyalty = () => {
     isLoading
   } = useSupabaseFidelity();
   
-  const { cartItems } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [customerName, setCustomerName] = useState('');
@@ -464,4 +462,4 @@ const AdminLoyalty = () => {
   );
 };
 
-export default AdminLoyalty;
+export default SupabaseAdminLoyalty;
