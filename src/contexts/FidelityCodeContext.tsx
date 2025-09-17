@@ -56,7 +56,7 @@ interface FidelityCodeContextType {
   registerCustomer: (name: string, phone: string) => void;
 }
 
-const FidelityCodeContext = createContext<FidelityCodeContextType | undefined>(undefined);
+export const FidelityCodeContext = createContext<FidelityCodeContextType | undefined>(undefined);
 
 export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [codes, setCodes] = useState<FidelityCode[]>(() => {
@@ -64,7 +64,7 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
     if (savedCodes) {
       try {
         const parsed = JSON.parse(savedCodes);
-        return parsed.map((code: any) => ({
+        return parsed.map((code: { createdAt: string; usedDate?: string }) => ({
           ...code,
           createdAt: new Date(code.createdAt),
           usedDate: code.usedDate ? new Date(code.usedDate) : undefined
@@ -84,7 +84,7 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const parsed = JSON.parse(savedCustomer);
         return {
           ...parsed,
-          stamps: parsed.stamps.map((stamp: any) => ({
+          stamps: parsed.stamps.map((stamp: { createdAt: string; usedDate?: string }) => ({
             ...stamp,
             createdAt: new Date(stamp.createdAt),
             usedDate: stamp.usedDate ? new Date(stamp.usedDate) : undefined
@@ -474,7 +474,7 @@ export const FidelityCodeProvider: React.FC<{ children: React.ReactNode }> = ({ 
       
       if (savedCustomers) {
         const customers = JSON.parse(savedCustomers);
-        return customers.map((customer: any) => ({
+        return customers.map((customer: CustomerFidelityData & { registrationDate?: string }) => ({
           ...customer,
           stamps: customer.stamps || [],
           registrationDate: customer.registrationDate ? new Date(customer.registrationDate) : new Date()

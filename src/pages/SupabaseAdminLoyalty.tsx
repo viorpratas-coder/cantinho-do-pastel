@@ -19,6 +19,7 @@ import {
   Star
 } from 'lucide-react';
 import { useSupabaseFidelity } from '@/contexts/SupabaseFidelityContext';
+import { FidelityCode, CustomerFidelityData } from '@/lib/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,8 +51,8 @@ const SupabaseAdminLoyalty = () => {
   const [filter, setFilter] = useState('all');
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [allCodes, setAllCodes] = useState<any[]>([]);
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [allCodes, setAllCodes] = useState<FidelityCode[]>([]);
+  const [customers, setCustomers] = useState<CustomerFidelityData[]>([]);
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -297,7 +298,7 @@ const SupabaseAdminLoyalty = () => {
                     <TableCell>
                       <Badge variant="secondary">
                         {/* Calcular total de códigos para este cliente */}
-                        {allCodes.filter((code: any) => 
+                        {allCodes.filter((code: FidelityCode) => 
                           code.customer_phone === customer.customer_phone).length}
                       </Badge>
                     </TableCell>

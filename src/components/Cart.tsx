@@ -87,9 +87,10 @@ const Cart = () => {
         toast.success('Pedido registrado!', {
           description: `Seu pedido #${orderId.substring(0, 8)} foi registrado com sucesso.`
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao registrar seu pedido.';
         toast.error('Erro ao registrar pedido', {
-          description: error.message || 'Ocorreu um erro ao registrar seu pedido.'
+          description: errorMessage
         });
         return;
       }

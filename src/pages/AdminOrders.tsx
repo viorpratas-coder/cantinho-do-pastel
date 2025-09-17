@@ -18,7 +18,7 @@ import {
   ShoppingCart,
   Eye
 } from 'lucide-react';
-import { useOrders } from '@/contexts/OrdersContext';
+import { useOrders, Order } from '@/contexts/OrdersContext';
 import { useFidelityCode } from '@/contexts/FidelityCodeContext';
 import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
 import {
@@ -41,7 +41,7 @@ const AdminOrders = () => {
   const { getAllCustomers } = useFidelityCode();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Obter todos os clientes para referência
@@ -125,7 +125,7 @@ const AdminOrders = () => {
     updateOrderStatus(orderId, newStatus);
   };
 
-  const handleViewDetails = (order: any) => {
+  const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };

@@ -10,7 +10,6 @@ import { CartProvider } from "./contexts/CartContext";
 import { ReviewsProvider } from "./contexts/ReviewsContext";
 import { FidelityCodeProvider } from "./contexts/FidelityCodeContext";
 import LoyaltyProgram from "./pages/LoyaltyProgram";
-import AdminLoyalty from "./pages/AdminLoyalty";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOrders from "./pages/AdminOrders";
 
@@ -27,7 +26,6 @@ import AdminPayments from "./pages/AdminPayments";
 import CustomerLayout from "./layouts/CustomerLayout";
 import CustomerProfile from "./pages/CustomerProfile";
 import CustomerOrders from "./pages/CustomerOrders";
-import CustomerLoyalty from "./pages/CustomerLoyalty";
 import CustomerRouteGuard from "@/components/CustomerRouteGuard";
 import { SupabaseFidelityProvider } from "./contexts/SupabaseFidelityContext";
 import { SupabaseAuthProvider } from "./contexts/SupabaseAuthContext";
@@ -43,8 +41,8 @@ const App = () => (
       <SupabaseAuthProvider>
         <PaymentProvider>
           <PreferencesProvider>
-            <OrdersProvider>
-              <FidelityCodeProvider>
+            <FidelityCodeProvider>
+              <OrdersProvider>
                 <SupabaseFidelityProvider>
                   <CartProvider>
                     <ReviewsProvider>
@@ -105,8 +103,8 @@ const App = () => (
                     </ReviewsProvider>
                   </CartProvider>
                 </SupabaseFidelityProvider>
-              </FidelityCodeProvider>
-            </OrdersProvider>
+              </OrdersProvider>
+            </FidelityCodeProvider>
           </PreferencesProvider>
         </PaymentProvider>
       </SupabaseAuthProvider>

@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
 import StarRating from './StarRating';
-import { useReviews } from '@/contexts/ReviewsContext';
+import { useReviews, Review } from '@/contexts/ReviewsContext';
 
 interface ProductReviewsProps {
   productId: number;
@@ -18,7 +18,7 @@ const ProductReviews = ({ productId, productName }: ProductReviewsProps) => {
   const [userName, setUserName] = useState('');
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [productReviews, setProductReviews] = useState<any[]>([]);
+  const [productReviews, setProductReviews] = useState<Review[]>([]);
 
   // Atualizar avaliações quando o contexto de avaliações mudar
   useEffect(() => {

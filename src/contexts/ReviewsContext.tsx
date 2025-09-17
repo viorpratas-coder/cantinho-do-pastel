@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-interface Review {
+export interface Review {
   id: string;
   productId: number;
   userName: string;

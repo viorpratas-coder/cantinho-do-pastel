@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePayment } from '@/contexts/PaymentContext';
+import { usePayment, PaymentMethod } from '@/contexts/PaymentContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -235,7 +235,7 @@ const PaymentMethods = () => {
                       <Label htmlFor="type">Tipo de Pagamento</Label>
                       <Select 
                         value={newMethod.type} 
-                        onValueChange={(value: any) => setNewMethod({...newMethod, type: value})}
+                        onValueChange={(value: PaymentMethod['type']) => setNewMethod({...newMethod, type: value})}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o tipo" />

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-interface PaymentMethod {
+export interface PaymentMethod {
   id: string;
   type: 'credit' | 'debit' | 'pix' | 'cash';
   name: string;

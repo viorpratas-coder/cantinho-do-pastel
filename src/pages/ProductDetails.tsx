@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Plus, Star, ArrowLeft } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
+import { useCart, Product } from '@/contexts/CartContext';
 import ProductReviews from '@/components/ProductReviews';
 import products from '@/data/products';
 
@@ -10,7 +10,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const productId = parseInt(id || '0');
@@ -25,7 +25,7 @@ const ProductDetails = () => {
   const handleAddToCart = () => {
     if (product) {
       // Adiciona 1 como quantidade padrão
-      addToCart({ ...product, quantity: 1 });
+      addToCart(product);
     }
   };
 

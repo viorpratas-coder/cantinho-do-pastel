@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useOrders } from '@/contexts/OrdersContext';
+import { useOrders, Order } from '@/contexts/OrdersContext';
 import { useFidelityCode } from '@/contexts/FidelityCodeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,7 +76,7 @@ const CustomerOrders = () => {
   };
 
   // Função para calcular o tempo estimado restante
-  const getEstimatedTimeLeft = (order: any) => {
+  const getEstimatedTimeLeft = (order: Order) => {
     const created = new Date(order.createdAt);
     const now = new Date();
     const elapsed = Math.floor((now.getTime() - created.getTime()) / 60000); // em minutos

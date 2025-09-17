@@ -1,5 +1,22 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface TransformedCustomerFidelityData {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  stamps: number;
+  lastRewardDate?: Date;
+  profileImage?: string;
+  level: number;
+  points: number;
+  totalSpent: number;
+  rewardsClaimed: number;
+  lastActivityDate?: Date;
+  registrationDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +33,7 @@ import {
   ShoppingCart,
   Eye
 } from 'lucide-react';
-import { useFidelityCode } from '@/contexts/FidelityCodeContext';
+import { useFidelityCode, CustomerFidelityData } from '@/contexts/FidelityCodeContext';
 import { useOrders } from '@/contexts/OrdersContext';
 import CustomerDetailsModal from '@/components/admin/CustomerDetailsModal';
 import {
@@ -39,7 +56,7 @@ const AdminCustomers = () => {
   const { orders } = useOrders();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerFidelityData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<'name' | 'level' | 'points' | 'orders' | 'spent'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -140,7 +157,7 @@ const AdminCustomers = () => {
     window.open(whatsappUrl, '_blank');
   };
 
-  const handleViewDetails = (customer: any) => {
+  const handleViewDetails = (customer: CustomerFidelityData) => {
     setSelectedCustomer(customer);
     setIsModalOpen(true);
   };

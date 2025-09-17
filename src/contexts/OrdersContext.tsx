@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useFidelityCode } from '@/contexts/FidelityCodeContext';
+import { FidelityCodeContext } from '@/contexts/FidelityCodeContext';
 
 interface OrderItem {
   id: number;
@@ -11,7 +11,7 @@ interface OrderItem {
   additionalFillings?: string[];
 }
 
-interface Order {
+export interface Order {
   id: string;
   customerName: string;
   customerPhone: string;
@@ -43,7 +43,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (savedOrders) {
       try {
         const parsed = JSON.parse(savedOrders);
-        return parsed.map((order: any) => ({
+        return parsed.map((order: { createdAt: string; updatedAt: string }) => ({
           ...order,
           createdAt: new Date(order.createdAt),
           updatedAt: new Date(order.updatedAt)
@@ -63,16 +63,14 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   });
 
   // Hook para verificar se o cliente está registrado
-  let fidelityContext;
-  try {
-    fidelityContext = useFidelityCode();
-  } catch (error) {
-    console.warn('FidelityCodeContext não disponível:', error);
-    fidelityContext = null;
-  }
+  const fidelityContext = useContext(FidelityCodeContext) || null;
   
-  const getAllCustomers = fidelityContext?.getAllCustomers || (() => []);
-  const addPointsFromPurchase = fidelityContext?.addPointsFromPurchase || (() => {});
+  const getAllCustomers = fidelityContext && typeof fidelityContext.getAllCustomers === 'function' 
+    ? fidelityContext.getAllCustomers 
+    : () => [];
+  const addPointsFromPurchase = fidelityContext && typeof fidelityContext.addPointsFromPurchase === 'function' 
+    ? fidelityContext.addPointsFromPurchase 
+    : () => {};
 
   // Salvar pedidos no localStorage
   useEffect(() => {
@@ -94,7 +92,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Função para verificar se o cliente está registrado
   const isCustomerRegistered = (phone: string): boolean => {
-    const customers = getAllCustomers();
+    const customers = typeof getAllCustomers === 'function' ? getAllCustomers() : [];
     return customers.some(customer => customer.customerPhone === phone);
   };
 
@@ -114,7 +112,9 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setOrders(prev => [...prev, newOrder]);
     
     // Adicionar pontos ao cliente com base no valor da compra
-    addPointsFromPurchase(orderData.customerPhone, orderData.totalPrice);
+    if (typeof addPointsFromPurchase === 'function') {
+      addPointsFromPurchase(orderData.customerPhone, orderData.totalPrice);
+    }
     
     return newOrder.id;
   };
