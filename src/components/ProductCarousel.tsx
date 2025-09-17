@@ -65,8 +65,10 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
   // Atualizar o número de produtos visíveis com base no tamanho da tela
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setVisibleProducts(1); // Mobile
+      if (window.innerWidth < 640) {
+        setVisibleProducts(1); // Mobile pequeno
+      } else if (window.innerWidth < 768) {
+        setVisibleProducts(2); // Tablet
       } else {
         setVisibleProducts(3); // Desktop
       }
@@ -157,13 +159,13 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
         <h2 className="text-2xl md:text-3xl font-bold text-foreground">{title}</h2>
         
         {/* Navigation Buttons */}
-        <div className="hidden md:flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={prevSlide}
             disabled={currentIndex === 0}
-            className="border-border hover:bg-primary hover:text-white smooth-transition"
+            className="border-border hover:bg-primary hover:text-white smooth-transition p-2 h-8 w-8"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -172,7 +174,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
             size="sm"
             onClick={nextSlide}
             disabled={currentIndex >= maxIndex}
-            className="border-border hover:bg-primary hover:text-white smooth-transition"
+            className="border-border hover:bg-primary hover:text-white smooth-transition p-2 h-8 w-8"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -191,8 +193,8 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
             const reviewCount = reviewCounts[product.id] || 0;
             
             return (
-              <div key={product.id} className="flex-none w-full md:w-1/3 px-3">
-                <Card className="card-gradient border-border hover-shadow netflix-hover group cursor-pointer overflow-hidden relative backdrop-blur-sm bg-card/80">
+              <div key={product.id} className="flex-none w-full sm:w-1/2 md:w-1/3 px-2 sm:px-3">
+                <Card className="card-gradient border-border hover-shadow netflix-hover group cursor-pointer overflow-hidden relative backdrop-blur-sm bg-card/80 h-full flex flex-col">
                   {/* Product Image */}
                   <div 
                     className="relative overflow-hidden rounded-t-lg"
@@ -201,7 +203,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
                     <img 
                       src={product.image} 
                       alt={product.name}
-                      className="w-full h-48 object-cover group-hover:scale-110 smooth-transition"
+                      className="w-full h-40 sm:h-48 object-cover group-hover:scale-110 smooth-transition"
                     />
                     
                     {/* Promo Badge */}
@@ -218,7 +220,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6 flex-grow flex flex-col">
                     <div className="mb-2">
                       <span className="text-xs text-accent font-medium uppercase tracking-wide">
                         {product.category}
@@ -226,14 +228,14 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
                     </div>
                     
                     <h3 
-                      className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary smooth-transition cursor-pointer"
+                      className="text-base sm:text-lg font-semibold text-foreground mb-2 group-hover:text-primary smooth-transition cursor-pointer"
                       onClick={() => handleProductClick(product.id)}
                     >
                       {product.name}
                     </h3>
                     
                     <p 
-                      className="text-sm text-foreground/70 mb-4 line-clamp-2 cursor-pointer"
+                      className="text-sm text-foreground/70 mb-4 line-clamp-2 cursor-pointer flex-grow"
                       onClick={() => handleProductClick(product.id)}
                     >
                       {product.description}
@@ -261,9 +263,9 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
                     )}
 
                     {/* Price */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-4 mt-auto">
                       <div className="flex items-center space-x-2">
-                        <span className="text-2xl font-bold text-accent">
+                        <span className="text-xl sm:text-2xl font-bold text-accent">
                           R$ {product.price.toFixed(2)}
                         </span>
                         {product.originalPrice && (
@@ -277,7 +279,7 @@ const ProductCarousel = ({ title, products }: ProductCarouselProps) => {
                     {/* Add to Cart Button */}
                     <Button 
                       onClick={() => addToCart(product)}
-                      className="w-full btn-primary primary-gradient text-white hover:scale-105 smooth-transition font-semibold py-3 shadow-lg hover:shadow-xl"
+                      className="w-full btn-primary primary-gradient text-white hover:scale-105 smooth-transition font-semibold py-2 sm:py-3 shadow-lg hover:shadow-xl text-sm sm:text-base"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Adicionar ao Carrinho

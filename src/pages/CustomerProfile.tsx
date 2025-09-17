@@ -113,8 +113,8 @@ const CustomerProfile = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Meu Perfil</h1>
-        <p className="text-foreground/70">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Meu Perfil</h1>
+        <p className="text-foreground/70 text-sm sm:text-base">
           Gerencie suas informações e pedidos
         </p>
       </div>
@@ -124,7 +124,7 @@ const CustomerProfile = () => {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex items-center justify-between flex-wrap gap-2">
                 <span className="flex items-center">
                   <User className="w-5 h-5 mr-2" />
                   Informações Pessoais

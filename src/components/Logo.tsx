@@ -7,10 +7,10 @@ const Logo = ({ showText = false }: { showText?: boolean }) => {
       <img 
         src={logoImage} 
         alt="Cantinho do Pastel Logo" 
-        className="h-20 w-auto object-contain -mt-2"
+        className="h-16 w-auto object-contain -mt-2 md:h-20"
       />
       {showText && (
-        <span className="text-xl font-bold text-gradient-primary ml-2">
+        <span className="hidden md:inline text-lg font-bold text-gradient-primary ml-2 md:text-xl">
           Cantinho do Pastel
         </span>
       )}

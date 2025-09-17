@@ -31,7 +31,7 @@ const Hero = () => {
           </div>
 
           {/* Main Title */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight">
             O Sabor que
             <span className="text-gradient-primary block">Merece Maratona!</span>
           </h1>

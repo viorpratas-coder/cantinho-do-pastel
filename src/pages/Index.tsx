@@ -15,6 +15,7 @@ import { useFidelityCode } from '@/contexts/FidelityCodeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useState } from 'react';
+// import DatabaseTest from '@/components/DatabaseTest';
 
 // Dados dos produtos (mantendo os dados existentes)
 const featuredProducts = [
@@ -188,14 +189,14 @@ const Index = () => {
       </section>
 
       {/* Rodapé */}
-      <footer className="bg-card border-t border-border py-12 px-4">
+      <footer className="bg-card border-t border-border py-8 px-4 sm:py-12">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
               <div className="flex items-center mb-4">
                 <Logo showText={true} />
               </div>
-              <p className="text-foreground/70 mb-4">
+              <p className="text-foreground/70 mb-4 text-sm sm:text-base">
                 O melhor pastel da cidade, feito com ingredientes frescos e muito carinho.
               </p>
               <div className="flex space-x-4">
@@ -203,9 +204,9 @@ const Index = () => {
                   href="https://wa.me/5511972239005" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-primary hover:text-white smooth-transition"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-white flex items-center justify-center hover:bg-primary hover:text-white smooth-transition"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
                     <path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.33.24-.53.24-.2 0-.37-.12-.53-.24l-7.9-4.44A.99.99 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.33-.24.53-.24.2 0 .37.12.53.24l7.9 4.44c.32.17.53.5.53.88v9z"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
@@ -214,9 +215,9 @@ const Index = () => {
                   href="https://www.instagram.com/_.cantinhodopastel_?utm_source=qr&igsh=MXAyODNjYTlraWFxZA==" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-primary hover:text-white smooth-transition"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-white flex items-center justify-center hover:bg-primary hover:text-white smooth-transition"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
@@ -226,9 +227,9 @@ const Index = () => {
                   href="https://www.tiktok.com/@cantinhodopastel" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-primary hover:text-white smooth-transition"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-white flex items-center justify-center hover:bg-primary hover:text-white smooth-transition"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
                     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
                   </svg>
                 </a>
@@ -271,6 +272,11 @@ const Index = () => {
       
       <WhatsAppButton />
       <Cart />
+      
+      {/* Teste de conexão com banco de dados - apenas para desenvolvimento */}
+      {/* <div className="container mx-auto py-8">
+        <DatabaseTest />
+      </div> */}
     </div>
   );
 };

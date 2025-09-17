@@ -145,11 +145,11 @@ const AdminLayout = () => {
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
               <div className="flex items-center flex-shrink-0 px-4">
                 <img
-                  className="h-8 w-auto"
+                  className="h-6 w-auto md:h-8"
                   src="/logo.png"
                   alt="Logo"
                 />
-                <span className="ml-2 text-xl font-bold text-gray-900">Admin</span>
+                <span className="ml-2 text-lg font-bold text-gray-900 md:text-xl">Admin</span>
               </div>
               <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
                 {navigation.map((item) => {

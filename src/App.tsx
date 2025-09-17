@@ -35,6 +35,16 @@ import SupabaseAdminLoyalty from "./pages/SupabaseAdminLoyalty";
 
 const queryClient = new QueryClient();
 
+// Criar um componente wrapper para o BrowserRouter com as futuras flags
+const BrowserRouterWithFuture = ({ children }: { children: React.ReactNode }) => (
+  <BrowserRouter future={{
+    v7_startTransition: false,
+    v7_relativeSplatPath: false
+  }}>
+    {children}
+  </BrowserRouter>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -49,7 +59,7 @@ const App = () => (
                       <TooltipProvider>
                         <Toaster />
                         <Sonner />
-                        <BrowserRouter>
+                        <BrowserRouterWithFuture>
                           <Routes>
                             <Route path="/" element={<Index />} />
                             <Route path="/product/:id" element={<ProductDetails />} />
@@ -98,7 +108,7 @@ const App = () => (
                             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                             <Route path="*" element={<NotFound />} />
                           </Routes>
-                        </BrowserRouter>
+                        </BrowserRouterWithFuture>
                       </TooltipProvider>
                     </ReviewsProvider>
                   </CartProvider>

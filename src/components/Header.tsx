@@ -94,7 +94,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div onClick={handleLogoClick} className="cursor-pointer">
+            <div onClick={handleLogoClick} className="cursor-pointer flex-shrink-0">
               <Logo showText={true} />
             </div>
           </div>
